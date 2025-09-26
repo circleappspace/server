@@ -223,6 +223,7 @@ router.get("/bubbles", (req, res) => {
       'id', b.id,
       'content', b.content,
       'anchor', b.anchor,
+      'timestamp', b.timestamp,
       'circle', JSON_OBJECT(
         'id', c.id,
         'name', c.name,
