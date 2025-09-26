@@ -20,14 +20,13 @@
   },
   "dependencies": {
     "argon2": "^0.44.0",
-    "dotenv": "^17.2.2",
     "express": "^5.1.0",
     "sqlite3": "^5.1.7",
     "svelte": "^4.2.18",
-    "svelte-spa-router": "^4.0.1",
     "vite": "^5.2.10"
   },
   "devDependencies": {
-    "@sveltejs/vite-plugin-svelte": "^3.1.1"
+    "@sveltejs/vite-plugin-svelte": "^3.1.1",
+    "@sveltejs/adapter-node": "^5.3.2"
   }
 }

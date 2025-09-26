@@ -1,21 +1,20 @@
 <script>
-  import Bubble from './Bubble.svelte';
   import { onMount } from 'svelte';
+  import Bubble from './Bubble.svelte';
 
   let bubbles = [];
 
-  onMount(async () => {
-    const response = await fetch('/api/v1/bubbles');
-    bubbles = await response.json();
+  onMount(() => {
+    fetch('/api/v1/bubbles')
+      .then(response => response.json())
+      .then(data => {
+        bubbles = data;
+      });
   });
 </script>
 
-<div>
-  {#if bubbles.length === 0}
-    <div>로딩 중...</div>
-  {:else}
-    {#each bubbles as bubble}
+<div class="timeline">
+  {#each bubbles as bubble (bubble.id)}
     <Bubble {bubble} />
-    {/each}
-  {/if}
+  {/each}
 </div>

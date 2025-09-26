@@ -1,6 +1,4 @@
 <script>
-  import Layout from './../Layout.svelte';
-
   function handleSubmit(event) {
     event.preventDefault();
     const formData = new FormData(event.target);
@@ -21,18 +19,16 @@
   }
 </script>
 
-<Layout>
-  <form>
-    <div>Username</div>
-    <div>
-      <input type="text" id="username" name="username" required />
-    </div>
-    <div>Password</div>
-    <div>
-      <input type="password" id="password" name="password" required />
-    </div>
-    <div>
-      <button on:click={handleSubmit}>Login</button>
-    </div>
-  </form>
-</Layout>
+<form>
+  <div>Username</div>
+  <div>
+    <input type="text" id="username" name="username" required />
+  </div>
+  <div>Password</div>
+  <div>
+    <input type="password" id="password" name="password" required />
+  </div>
+  <div>
+    <button on:click={handleSubmit}>Login</button>
+  </div>
+</form>
