@@ -2,7 +2,6 @@ import sys
 import requests
 import json
 import xml.dom.minidom
-from bs4 import BeautifulSoup
 
 def parse_http_file(path):
     method = None
@@ -56,14 +55,6 @@ def pretty_print_response(response):
             return
         except Exception:
             pass
-
-    if "html" in ctype:
-        soup = BeautifulSoup(text, "html.parser")
-        text = soup.get_text().strip()
-        while "\n\n\n" in text:
-            text = text.replace("\n\n\n", "\n\n")
-        print(text)
-        return
 
     # 그 외는 그냥 출력
     print(text)

@@ -8,7 +8,13 @@ const app = express()
 const PORT = process.env.PORT || 3000
 const __dirname = path.resolve();
 
-app.use(express.static(path.join(__dirname, 'dist')));
+app.use(express.static(path.join(__dirname, 'dist'), {
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith('.js')) {
+      res.setHeader('Content-Type', 'application/javascript');
+    }
+  }
+}));
 
 app.get("/api/hello", (req, res) => {
   res.send("Hello, World!")
