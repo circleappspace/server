@@ -41,6 +41,18 @@ def create_database(db_name):
         );
     ''')
 
+    # 참가(팔로우) 테이블 생성
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS joins (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            joiner_id INTEGER,
+            joinee_id INTEGER,
+            UNIQUE(joiner_id, joinee_id),
+            FOREIGN KEY(joiner_id) REFERENCES circles(id),
+            FOREIGN KEY(joinee_id) REFERENCES circles(id)
+        );
+    ''')
+
     # 샘플 데이터 삽입
     for i in range(1, 6):
         cursor.execute(
@@ -53,6 +65,12 @@ def create_database(db_name):
                     'INSERT INTO bubbles (circle_id, content) VALUES (?, ?)',
                     (circle_id, f'This is bubble {j} of Circle {i}.')
             )
+
+    # 샘플 팔로우 관계 삽입
+    cursor.execute('INSERT INTO joins (joiner_id, joinee_id) VALUES (1, 2)')
+    cursor.execute('INSERT INTO joins (joiner_id, joinee_id) VALUES (1, 3)')
+    cursor.execute('INSERT INTO joins (joiner_id, joinee_id) VALUES (2, 3)')
+    cursor.execute('INSERT INTO joins (joiner_id, joinee_id) VALUES (3, 4)')
 
     conn.commit()
     conn.close()

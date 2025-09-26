@@ -1,6 +1,8 @@
 <script>
-  let name = "World";
+  import Layout from './Layout.svelte';
+  import Timeline from './Timeline.svelte';
 </script>
 
-<h1>Hello {name}!</h1>
-<input bind:value={name} placeholder="Type your name" />
+<Layout>
+  <Timeline />
+</Layout>

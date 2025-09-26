@@ -35,7 +35,7 @@ function authenticateToken(req, res, next) {
   });
 }
 
-router.post("/logins", (req, res) => {
+router.post("/auth/logins", (req, res) => {
   const { username, password_hash } = req.body;
   db.get("SELECT * FROM circles WHERE username = ? AND password_hash = ?", [username, password_hash], (err, row) => {
     if (err) {
@@ -59,7 +59,7 @@ router.post("/logins", (req, res) => {
   });
 });
 
-router.get("/logins", (req, res) => {
+router.get("/auth/logins", (req, res) => {
   authenticateToken(req, res, () => {
     db.all("SELECT * FROM auths WHERE circle_id = ?", [req.circle_id], (err, rows) => {
       if (err) {
@@ -71,7 +71,7 @@ router.get("/logins", (req, res) => {
   });
 });
 
-router.delete("/logins", authenticateToken, (req, res) => {
+router.delete("/auth/logins", authenticateToken, (req, res) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader.split(' ')[1];
   db.run("DELETE FROM auths WHERE token = ?", [token], function(err) {
@@ -80,6 +80,17 @@ router.delete("/logins", authenticateToken, (req, res) => {
       return;
     }
     res.json({ message: "Logged out" });
+  });
+});
+
+router.post("/auth/register", (req, res) => {
+  const { username, password_hash } = req.body;
+  db.run("INSERT INTO circles (username, password_hash) VALUES (?, ?)", [username, password_hash], function(err) {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.redirect(`/api/v1/circles/${this.lastID}`);
   });
 });
 
@@ -98,6 +109,83 @@ router.get("/circles/:id", (req, res) => {
   });
 });
 
+router.put("/circles/:id", authenticateToken, (req, res) => {
+  const { id } = req.params;
+  if (parseInt(id) !== req.circle_id) {
+    res.status(403).json({ error: "Cannot modify other circles" });
+    return;
+  }
+  const { name, username, bio } = req.body;
+  db.run("UPDATE circles SET name = ?, username = ?, bio = ? WHERE id = ?", [name, username, bio, id], function(err) {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.redirect(`/api/v1/circles/${id}`);
+  });
+});
+
+router.get("/circles/:id/bubbles", (req, res) => {
+  const { id } = req.params;
+  db.all("SELECT * FROM bubbles WHERE circle_id = ?", [id], (err, rows) => {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.json(rows);
+  });
+});
+
+router.get("/circles/:id/joins", (req, res) => {
+  const { id } = req.params;
+  db.all("SELECT * FROM joins WHERE joiner_id = ?", [id], (err, rows) => {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.json(rows);
+  });
+});
+
+router.post("/circles/:id/joins", authenticateToken, (req, res) => {
+  const { id } = req.params;
+  const joiner_id = req.circle_id;
+  if (parseInt(id) === joiner_id) {
+    res.status(400).json({ error: "Cannot join yourself" });
+    return;
+  }
+  db.run("INSERT INTO joins (joiner_id, joinee_id) VALUES (?, ?)", [joiner_id, id], function(err) {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.json({ message: "Joined successfully" });
+  });
+});
+
+router.delete("/circles/:id/joins", authenticateToken, (req, res) => {
+  const { id } = req.params;
+  const joiner_id = req.circle_id;
+  db.run("DELETE FROM joins WHERE joiner_id = ? AND joinee_id = ?", [joiner_id, id], function(err) {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.json({ message: "Unjoined successfully" });
+  });
+});
+
+router.get("/circles/:id/joinedbys", (req, res) => {
+  const { id } = req.params;
+  db.all("SELECT * FROM joins WHERE joinee_id = ?", [id], (err, rows) => {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.json(rows);
+  });
+});
+
 router.post("/bubbles", authenticateToken, (req, res) => {
   const { content, anchor } = req.body;
   const circle_id = req.circle_id;
@@ -111,34 +199,77 @@ router.post("/bubbles", authenticateToken, (req, res) => {
 });
 
 router.get("/bubbles", (req, res) => {
-  db.all("SELECT * FROM bubbles", [], (err, rows) => {
+  db.all(`
+    SELECT JSON_OBJECT(
+      'id', b.id,
+      'content', b.content,
+      'anchor', b.anchor,
+      'circle', JSON_OBJECT(
+        'id', c.id,
+        'name', c.name,
+        'username', c.username,
+        'bio', c.username
+      )
+    ) AS bubble
+    FROM bubbles b
+    JOIN circles c ON b.circle_id = c.id
+    ORDER BY b.id DESC
+    LIMIT 50
+  `, [], (err, rows) => {
     if (err) {
       res.status(500).json({ error: err.message });
       return;
     }
-    res.json(rows);
+    const bubbles = rows.map(row => JSON.parse(row.bubble));
+    res.json(bubbles);
   });
 });
 
 router.get("/bubbles/:id", (req, res) => {
   const { id } = req.params;
-  db.get("SELECT * FROM bubbles WHERE id = ?", [id], (err, row) => {
+  db.get(`
+    SELECT JSON_OBJECT(
+      'id', b.id,
+      'content', b.content,
+      'anchor', b.anchor,
+      'timestamp', b.timestamp,
+      'circle', JSON_OBJECT(
+        'id', c.id,
+        'name', c.name,
+        'username', c.username,
+        'bio', c.username
+      )
+    ) AS bubble
+    FROM bubbles b
+    JOIN circles c ON b.circle_id = c.id
+    WHERE b.id = ?
+  `, [id], (err, row) => {
     if (err) {
       res.status(500).json({ error: err.message });
       return;
     }
-    res.json(row);
+    if (!bubbles) {
+      res.status(404).json({ error: "Bubble not found" });
+      return;
+    }
+    const bubble = JSON.parse(row.bubble);
+    res.json(bubble);
   });
 });
 
-router.get("/circles/:circlesId/bubbles", (req, res) => {
-  const { circlesId } = req.params;
-  db.all("SELECT * FROM bubbles WHERE circle_id = ?", [circlesId], (err, rows) => {
+router.delete("/bubbles/:id", authenticateToken, (req, res) => {
+  const { id } = req.params;
+  const circle_id = req.circle_id;
+  db.run("DELETE FROM bubbles WHERE id = ? AND circle_id = ?", [id, circle_id], function(err) {
     if (err) {
       res.status(500).json({ error: err.message });
       return;
     }
-    res.json(rows);
+    if (this.changes === 0) {
+      res.status(404).json({ error: "Bubble not found or not owned by you" });
+      return;
+    }
+    res.json({ message: "OK" });
   });
 });
 
