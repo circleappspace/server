@@ -22,10 +22,10 @@
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
     "nodemon": "^3.1.10",
-    "svelte": "^5.39.6",
-    "vite": "^7.1.7"
+    "svelte": "^4.2.18",
+    "vite": "^5.2.10"
   },
   "devDependencies": {
-    "@sveltejs/vite-plugin-svelte": "^6.2.1"
+    "@sveltejs/vite-plugin-svelte": "^3.1.1"
   }
 }
