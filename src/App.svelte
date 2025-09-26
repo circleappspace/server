@@ -1,8 +1,14 @@
 <script>
-  import Layout from './Layout.svelte';
-  import Timeline from './Timeline.svelte';
+  import Router from "svelte-spa-router";
+  import Home from "./home/Home.svelte";
+  import Login from "./login/Login.svelte";
+
+  const routes = {
+    "/": Home,
+    "/login": Login,
+  };
 </script>
 
-<Layout>
-  <Timeline />
-</Layout>
+<main>
+  <Router {routes} />
+</main>

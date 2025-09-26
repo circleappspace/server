@@ -1,6 +1,24 @@
 import express from 'express';
 import sqlite3 from 'sqlite3';
 import crypto from 'crypto';
+import argon2 from 'argon2';
+
+async function hashPassword(plain) {
+  return await argon2.hash(plain, {
+    type: argon2.argon2id,
+    memoryCost: 2 ** 16,
+    timeCost: 3,
+    parallelism: 1,
+  });
+}
+
+async function verifyPassword(plain, storedHash) {
+  try {
+    return await argon2.verify(storedHash, plain);
+  } catch (err) {
+    return false;
+  }
+}
 
 const router = express.Router();
 const db = new sqlite3.Database('./database.db', (err) => {
@@ -30,13 +48,20 @@ function authenticateToken(req, res, next) {
       res.status(401).json({ error: "Invalid token" });
       return;
     }
+    verifyPassword(token, row.token).then(isValid => {
+      if (!isValid) {
+        res.status(401).json({ error: "Invalid token" });
+        return;
+      }
+    });
     req.circle_id = row.circle_id;
     next();
   });
 }
 
 router.post("/auth/logins", (req, res) => {
-  const { username, password_hash } = req.body;
+  const { username, password } = req.body;
+  const password_hash = hashPassword(password);
   db.get("SELECT * FROM circles WHERE username = ? AND password_hash = ?", [username, password_hash], (err, row) => {
     if (err) {
       res.status(500).json({ error: err.message });
