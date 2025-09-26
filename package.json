@@ -16,16 +16,17 @@
   "main": "index.js",
   "scripts": {
     "build": "rm -rf dist && vite build",
-    "serve": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "serve": "node index.js"
   },
   "dependencies": {
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
-    "nodemon": "^3.1.10",
     "svelte": "^4.2.18",
     "vite": "^5.2.10"
   },
   "devDependencies": {
-    "@sveltejs/vite-plugin-svelte": "^3.1.1"
+    "@sveltejs/vite-plugin-svelte": "^3.1.1",
+    "nodemon": "^3.1.10"
   }
 }
