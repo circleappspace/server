@@ -1,7 +1,10 @@
 import express from "express"
 import path from 'path';
+import dotenv from "dotenv"
 
 import apiv1Router from "./routes/apiv1.js"
+
+dotenv.config()
 
 const app = express()
 const PORT = process.env.PORT || 3000
