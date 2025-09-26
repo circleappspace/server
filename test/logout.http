@@ -1,0 +1,2 @@
+DELETE localhost:3000/api/v1/logins
+Authorization: Bearer 7924757e90a436896fbe73f9ff618cd1

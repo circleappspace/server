@@ -1,0 +1,8 @@
+POST localhost:3000/api/v1/bubbles
+Content-Type: application/json
+Authorization: Bearer 218fb456d2f0f13207342f95599045ae
+
+{
+    "content": "this is anchored bubble",
+    "anchor": 16
+}

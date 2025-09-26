@@ -1,1 +1,1 @@
-GET http://localhost:3000/bubbles
+GET http://localhost:3000/api/v1/bubbles

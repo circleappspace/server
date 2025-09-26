@@ -1,0 +1,2 @@
+GET localhost:3000/api/v1/logins
+Authorization: Bearer 218fb456d2f0f13207342f95599045ae
