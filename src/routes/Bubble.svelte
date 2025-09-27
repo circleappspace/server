@@ -1,12 +1,10 @@
 <script>
   import { onMount } from "svelte";
+  import "bootstrap-icons/font/bootstrap-icons.css";
 
   export let bubble;
 
-  let paragraphs = [];
-  onMount(() => {
-    paragraphs = bubble.content.split("\n").filter((p) => p.trim() !== "");
-  });
+  const paragraphs = bubble.content.split("\n").filter((p) => p.trim() !== "");
 </script>
 
 <a href="/b/{bubble.id}" style="text-decoration: none; color: inherit;">
@@ -23,7 +21,11 @@
         ·
         <a href="/c/{bubble.circle.username}">c/{bubble.circle.username}</a>
       </div>
-    </div>
+      <div class="actions">
+        <a href="/b/{bubble.id}/attach">
+          <div><i class="bi bi-reply"></i> 붙이기</div>
+        </a>
+      </div>
     <slot></slot>
   </div>
 </a>

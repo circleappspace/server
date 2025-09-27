@@ -283,7 +283,7 @@ router.get("/circles/username/:username/bubbles", (req, res) => {
 router.post("/bubbles", authenticateToken, (req, res) => {
   const { content, anchor } = req.body;
   const circle_id = req.circle_id;
-  db.query("INSERT INTO bubbles (content, anchor, circle_id) VALUES (?, ?, ?)", [content, anchor, circle_id])
+  db.query("INSERT INTO bubbles (circle_id, content, anchor) VALUES (?, ?, ?)", [circle_id, content, anchor])
     .then(() => {
       res.status(201).json({ message: "OK" });
     })

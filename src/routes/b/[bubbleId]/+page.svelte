@@ -6,13 +6,14 @@
   let { bubbleId } = $page.params;
   let bubble;
 
-  let anchoreds;
+  let anchoreds = [];
 
   onMount(() => {
     fetch(`/api/v1/bubbles/${bubbleId}`)
       .then((res) => res.json())
       .then((data) => {
         bubble = data;
+        console.log(bubble);
       });
 
     fetch(`/api/v1/bubbles/${bubbleId}/anchoreds`)
@@ -29,4 +30,6 @@
     <Bubble bubble={anchored} />
   {/each}
 </Bubble>
+{:else}
+<div>로딩 중 ...</div>
 {/if}

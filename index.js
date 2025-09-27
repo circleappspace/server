@@ -23,10 +23,6 @@ app.use(express.json())
 
 app.use('/api/v1', apiv1Router)
 
-// app.get(/.*/, (req, res) => {
-//   res.sendFile(path.join(__dirname, 'build/index.html'));
-// });
-
 app.use(handler)
 
 app.listen(PORT, () => {

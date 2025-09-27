@@ -16,7 +16,8 @@
   "main": "index.js",
   "scripts": {
     "build": "vite build",
-    "start": "node index.js"
+    "start": "node index.js",
+    "dev": "concurrently \"vite dev --host\" \"node index.js\""
   },
   "dependencies": {
     "argon2": "^0.44.0",
@@ -31,6 +32,7 @@
   "devDependencies": {
     "@sveltejs/adapter-node": "^5.3.2",
     "@sveltejs/vite-plugin-svelte": "^3.1.1",
-    "svelte-preprocess": "^6.0.3"
+    "svelte-preprocess": "^6.0.3",
+    "concurrently": "^8.2.0"
   }
 }

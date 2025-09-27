@@ -7,8 +7,6 @@
     const content = formData.get('content');
     const token = Cookies.get('token');
 
-    console.log(token);
-
     fetch("/api/v1/bubbles", {
       method: "POST",
       headers: {

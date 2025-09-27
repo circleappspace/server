@@ -6,5 +6,11 @@ export default defineConfig({
   plugins: [sveltekit()],
   build: {
     target: 'es2019',
+  },
+  server: {
+    proxy: {
+      '/api': 'http://localhost:3000'
+    },
+    allowedHosts: ["sch.shtelo.org", "localhost"]
   }
 });
