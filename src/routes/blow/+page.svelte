@@ -19,7 +19,6 @@
     })
     .then(response => response.json())
     .then(data => {
-      alert('Success:', data);
       window.location.href = "/";
     })
     .catch((error) => {

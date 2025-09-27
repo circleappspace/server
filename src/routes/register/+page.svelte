@@ -12,7 +12,6 @@
     }) .then(response => response.json())
       .then(data => {
         if (data.message === "OK") {
-          alert('Registration successful! Please log in.');
           window.location.href = '/login';
         } else {
           alert('Registration failed: ' + (data.error || 'Unknown error'));

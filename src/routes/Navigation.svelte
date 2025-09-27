@@ -2,7 +2,6 @@
   import Cookies from 'js-cookie';
 
   let token = Cookies.get('token');
-  console.log('Token:', token);
 </script>
 
 <div class="navigation">
