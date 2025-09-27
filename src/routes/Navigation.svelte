@@ -24,10 +24,19 @@
       Cookies.remove('token');
     });
   });
+
+  function home(event) {
+    event.preventDefault();
+    if (window.location.pathname === '/') {
+      window.location.reload();
+      return;
+    }
+    window.location.href = '/';
+  }
 </script>
 
 <div class="navigation">
-  <div><a href="/"><i class="bi bi-house"></i> 홈</a></div>
+  <div><a href="/" on:click={home}><i class="bi bi-house"></i> 홈</a></div>
   {#if token}
   <div><a href="/logout"><i class="bi bi-box-arrow-right"></i> 로그아웃</a></div>
   <div><a href="/blow"><i class="bi bi-wind"></i> 불기</a></div>
