@@ -262,6 +262,24 @@ router.get("/circles/username/:username", (req, res) => {
     });
 });
 
+router.get("/circles/username/:username/bubbles", (req, res) => {
+  const { username } = req.params;
+  db.query(`
+    SELECT ${BUBBLE_JSON_FIELDS} AS bubble
+    FROM bubbles b
+    JOIN circles c ON b.circle_id = c.id
+    WHERE c.username = ?
+    ORDER BY b.id DESC
+    LIMIT 50
+  `, [username]).then(data => {
+    const [rows, fields] = data;
+    const bubbles = rows.map(row => JSON.parse(row.bubble));
+    res.json(bubbles);
+  }).catch(err => {
+    res.status(500).json({ error: err.message });
+  });
+});
+
 router.post("/bubbles", authenticateToken, (req, res) => {
   const { content, anchor } = req.body;
   const circle_id = req.circle_id;

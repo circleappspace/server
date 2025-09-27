@@ -1,6 +1,7 @@
 <script>
   import { page } from "$app/stores";
   import { onMount } from "svelte";
+  import Timeline from "../..//Timeline.svelte";
 
   let username = $page.params.username;
   let circle = {};
@@ -13,6 +14,8 @@
       });
   });
 </script>
+
+<Timeline {username} />
 
 <div>{circle.name}</div>
 <div>c/{circle.username}</div>

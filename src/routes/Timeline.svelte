@@ -2,10 +2,15 @@
   import { onMount, tick } from 'svelte';
   import Bubble from './Bubble.svelte';
 
+  export let username = "";
+
   let bubbles = [];
 
   onMount(() => {
-    fetch('/api/v1/bubbles')
+    const url = username.length > 0
+      ? `/api/v1/circles/username/${username}/bubbles`
+      : `/api/v1/bubbles`;
+    fetch(url)
       .then(response => response.json())
       .then(async data => {
         bubbles = data.reverse();
