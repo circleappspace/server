@@ -1,11 +1,13 @@
 <script>
+  import Cookies from 'js-cookie';
+
   function handleSubmit(event) {
     event.preventDefault();
     const formData = new FormData(event.target);
     const username = formData.get('username');
-    const password = formData.get('password_hash');
+    const password = formData.get('password');
 
-    fetch('/api/v1/logins', {
+    fetch('/api/v1/auth/logins', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -14,12 +16,17 @@
     })
     .then(response => response.json())
     .then(data => {
-      console.log('Success:', data);
+      if (data.token) {
+        Cookies.set('token', data.token);
+        window.location.href = '/';
+      } else {
+        alert('Login failed: ' + (data.error || 'Unknown error'));
+      }
     });
   }
 </script>
 
-<form>
+<form on:submit={handleSubmit}>
   <div>Username</div>
   <div>
     <input type="text" id="username" name="username" required />
@@ -29,6 +36,6 @@
     <input type="password" id="password" name="password" required />
   </div>
   <div>
-    <button on:click={handleSubmit}>Login</button>
+    <button type="submit">Login</button>
   </div>
 </form>

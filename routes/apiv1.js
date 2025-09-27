@@ -46,18 +46,19 @@ function authenticateToken(req, res, next) {
         if (!isValid) {
           res.status(401).json({ error: "Invalid token" });
           return;
+        } else {
+          req.circle_id = row.circle_id;
+          next();
         }
       });
-      req.circle_id = row.circle_id;
-      next();
     }).catch(err => {
       res.status(500).json({ error: err.message });
     });
 }
 
-router.post("/auth/logins", (req, res) => {
+router.post("/auth/logins", async (req, res) => {
   const { username, password } = req.body;
-  const password_hash = hashPassword(password);
+  const password_hash = await hashPassword(password);
   db.query("SELECT * FROM circles WHERE username = ?", [username])
     .then(data => {
       const [rows, fields] = data;
@@ -69,12 +70,11 @@ router.post("/auth/logins", (req, res) => {
 
       const ua = req.headers['user-agent'] || 'unknown';
       const token = crypto.randomBytes(16).toString("hex");
-      db.run("INSERT INTO auths (circle_id, token, agent) VALUES (?, ?, ?)", [row.id, token, ua], function(err) {
-        if (err) {
-          res.status(500).json({ error: err.message });
-          return;
-        }
+      db.query("INSERT INTO auths (circle_id, token, agent) VALUES (?, ?, ?)", [row.id, token, ua])
+      .then(() => {
         res.json({ token });
+      }).catch(err => {
+        res.status(500).json({ error: err.message });
       });
     }).catch(err => {
       res.status(500).json({ error: err.message });
@@ -98,17 +98,18 @@ router.delete("/auth/logins", authenticateToken, (req, res) => {
   const token = authHeader.split(' ')[1];
   db.query("DELETE FROM auths WHERE token = ?", [token])
     .then(() => {
-      res.json({ message: "Logged out" });
+      return res.json({ message: "OK" });
     }).catch(err => {
-      res.status(500).json({ error: err.message });
+      return res.status(500).json({ error: err.message });
     });
 });
 
-router.post("/auth/register", (req, res) => {
-  const { username, password_hash } = req.body;
-  db.query("INSERT INTO circles (username, password_hash) VALUES (?, ?)", [username, password_hash])
+router.post("/auth/register", async (req, res) => {
+  const { name, username, password } = req.body;
+  const password_hash = await hashPassword(password)
+  db.query("INSERT INTO circles (name, username, password_hash) VALUES (?, ?, ?)", [name, username, password_hash])
     .then(() => {
-      res.redirect(`/api/v1/circles/${this.lastID}`);
+      res.status(201).json({ message: "OK" });
     }).catch(err => {
       res.status(500).json({ error: err.message });
     });
@@ -210,7 +211,7 @@ router.post("/bubbles", authenticateToken, (req, res) => {
   const circle_id = req.circle_id;
   db.query("INSERT INTO bubbles (content, anchor, circle_id) VALUES (?, ?, ?)", [content, anchor, circle_id])
     .then(() => {
-      res.redirect(`/api/v1/bubbles/${this.lastID}`);
+      res.status(201).json({ message: "OK" });
     })
     .catch(err => {
       res.status(500).json({ error: err.message });
@@ -269,7 +270,6 @@ router.get("/bubbles/:id", (req, res) => {
       res.status(404).json({ error: "Bubble not found" });
       return;
     }
-    console.log(row);
     const bubble = JSON.parse(row.bubble);
     res.json(bubble);
   }).catch(err => {

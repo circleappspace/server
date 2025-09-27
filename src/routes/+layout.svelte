@@ -1,11 +1,11 @@
+<script>
+  import Navigation from './Navigation.svelte';
+</script>
+
 <div class="container">
   <div class="footer">서클</div>
   <slot />
-  <div class="navigation">
-    <div><a href="/">홈</a></div>
-    <div><a href="/login">로그인</a></div>
-    <div><a href="/register">가입</a></div>
-  </div>
+  <Navigation />
   <div class="header">서클</div>
 </div>
 
