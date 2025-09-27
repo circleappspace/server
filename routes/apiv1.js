@@ -167,16 +167,32 @@ router.get("/circles/:id", (req, res) => {
     });
 });
 
-router.put("/circles/:id", authenticateToken, (req, res) => {
-  const { id } = req.params;
-  if (parseInt(id) !== req.circle_id) {
-    res.status(403).json({ error: "Cannot modify other circles" });
+router.put("/circles", authenticateToken, (req, res) => {
+  const id = req.circle_id;
+  const { name, username, bio } = req.body;
+  const updates = [];
+  const params = [];
+  if (name !== undefined) {
+    updates.push("name = ?");
+    params.push(name);
+  }
+  if (username !== undefined) {
+    updates.push("username = ?");
+    params.push(username);
+  }
+  if (bio !== undefined) {
+    updates.push("bio = ?");
+    params.push(bio);
+  }
+  if (updates.length === 0) {
+    res.status(400).json({ error: "No fields to update" });
     return;
   }
-  const { name, username, bio } = req.body;
-  db.query("UPDATE circles SET name = ?, username = ?, bio = ? WHERE id = ?", [name, username, bio, id])
+  params.push(id);
+  const sql = `UPDATE circles SET ${updates.join(", ")} WHERE id = ?`;
+  db.query(sql, params)
     .then(() => {
-      res.redirect(`/api/v1/circles/${id}`);
+      res.json({ message: "OK" });
     }).catch(err => {
       res.status(500).json({ error: err.message });
     });

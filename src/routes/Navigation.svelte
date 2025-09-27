@@ -40,7 +40,7 @@
   {#if token}
   <div><a href="/logout"><i class="bi bi-box-arrow-right"></i> 로그아웃</a></div>
   <div><a href="/blow"><i class="bi bi-wind"></i> 불기</a></div>
-  <div><a href="/c/{myUsername}"><i class="bi bi-person-circle"></i> 서클</a></div>
+  <div><a href="/c/{myUsername}" data-sveltekit-reload><i class="bi bi-person-circle"></i> 서클</a></div>
   {:else}
   <div><a href="/login"><i class="bi bi-box-arrow-in-right"></i> 로그인</a></div>
   <div><a href="/register"><i class="bi bi-person-plus"></i> 회원가입</a></div>
