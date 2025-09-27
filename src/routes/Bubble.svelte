@@ -17,7 +17,7 @@
       <div class="header">
         {#if bubble.anchor}
         <a href="/b/{bubble.anchor}" style="text-decoration: none; color: inherit;" data-sveltekit-reload>
-          <i class="bi bi-paperclip"></i> {bubble.anchor}
+          <i class="bi bi-paperclip"></i> b/{bubble.anchor}
         </a>
         {/if}
       </div>
