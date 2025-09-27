@@ -19,7 +19,7 @@
     fetch(`/api/v1/bubbles/${bubbleId}/anchoreds`)
       .then((res) => res.json())
       .then((data) => {
-        anchoreds = data;
+        anchoreds = reverse(data);
       });
   });
 </script>
