@@ -11,7 +11,11 @@
     <div class="paragraph">{paragraph}</div>
     {/each}
   </div>
-  <div class="footer">{new Date(bubble.timestamp).toLocaleString()} · c/{bubble.circle.username}</div>
+  <div class="footer">
+    {new Date(bubble.timestamp).toLocaleString()}
+    ·
+    <a href="/c/{bubble.circle.username}">c/{bubble.circle.username}</a>
+  </div>
 </div>
 
 <style>

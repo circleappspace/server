@@ -1,7 +1,11 @@
 <script>
   import Cookies from 'js-cookie';
 
+  let loggingIn = false;
+
   function handleSubmit(event) {
+    loggingIn = true;
+
     event.preventDefault();
     const formData = new FormData(event.target);
     const username = formData.get('username');
@@ -36,6 +40,10 @@
     <input type="password" id="password" name="password" required />
   </div>
   <div>
-    <button type="submit">Login</button>
+    {#if !loggingIn}
+      <button type="submit">Login</button>
+    {:else}
+      <button type="submit" disabled>Logging in...</button>
+    {/if}
   </div>
 </form>
