@@ -6,7 +6,7 @@
   <slot />
   <Navigation />
   <div class="header">
-    <img src="/circle-icon-cherry.PNG" alt="Logo" width="24" height="24" />
+    <img src="/circle-icon-mint.PNG" alt="Logo" width="24" height="24" />
   </div>
 </div>
 
