@@ -245,6 +245,23 @@ router.get("/circles/:id/joinedbys", (req, res) => {
     });
 });
 
+router.get("/circles/username/:username", (req, res) => {
+  const { username } = req.params;
+  db.query(`SELECT ${CIRCLE_JSON_FIELDS} AS circle FROM circles c WHERE c.username = ?`, [username])
+    .then(data => {
+      const [rows, fields] = data;
+      const row = rows[0];
+      if (!row) {
+        res.status(404).json({ error: "Circle not found" });
+        return;
+      }
+      const circle = JSON.parse(row.circle);
+      res.json(circle);
+    }).catch(err => {
+      res.status(500).json({ error: err.message });
+    });
+});
+
 router.post("/bubbles", authenticateToken, (req, res) => {
   const { content, anchor } = req.body;
   const circle_id = req.circle_id;
