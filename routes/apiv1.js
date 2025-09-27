@@ -16,9 +16,9 @@ const BUBBLE_JSON_FIELDS = `
   JSON_OBJECT(
     'id', b.id,
     'content', b.content,
-    'anchor', b.anchor,
     'timestamp', b.timestamp,
-    'circle', ${CIRCLE_JSON_FIELDS}
+    'circle', ${CIRCLE_JSON_FIELDS},
+    'anchor', b.anchor
   )
 `;
 

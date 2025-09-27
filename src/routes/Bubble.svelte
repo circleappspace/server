@@ -7,9 +7,16 @@
   const paragraphs = bubble.content.split("\n").filter((p) => p.trim() !== "");
 </script>
 
-<a href="/b/{bubble.id}" style="text-decoration: none; color: inherit;">
+<a href="/b/{bubble.id}" style="text-decoration: none; color: inherit;" data-sveltekit-reload>
   <div class="bubble">
     <div class="self">
+      <div class="header">
+        {#if bubble.anchor}
+        <a href="/b/{bubble.anchor}" style="text-decoration: none; color: inherit;" data-sveltekit-reload>
+          <i class="bi bi-paperclip"></i> {bubble.anchor}
+        </a>
+        {/if}
+      </div>
       <div class="name">{bubble.circle.name}</div>
       <div class="content">
         {#each paragraphs as paragraph}
