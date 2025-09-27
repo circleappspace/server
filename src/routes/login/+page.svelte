@@ -22,6 +22,7 @@
     .then(data => {
       if (data.token) {
         Cookies.set('token', data.token);
+        Cookies.set('username', username);
         window.location.href = '/';
       } else {
         alert('Login failed: ' + (data.error || 'Unknown error'));

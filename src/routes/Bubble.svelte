@@ -1,10 +1,14 @@
 <script>
   import { onMount } from "svelte";
   import "bootstrap-icons/font/bootstrap-icons.css";
+  import Cookies from "js-cookie";
 
   export let bubble;
 
   const paragraphs = bubble.content.split("\n").filter((p) => p.trim() !== "");
+
+  const username = Cookies.get("username");
+  let mine = bubble.circle.username === username;
 </script>
 
 <a href="/b/{bubble.id}" style="text-decoration: none; color: inherit;" data-sveltekit-reload>
@@ -24,14 +28,18 @@
         {/each}
       </div>
       <div class="footer">
-        {new Date(bubble.timestamp).toLocaleString()}
-        ·
+        {new Date(bubble.timestamp).toLocaleString()} ·
         <a href="/c/{bubble.circle.username}">c/{bubble.circle.username}</a>
       </div>
       <div class="actions">
         <a href="/b/{bubble.id}/attach">
           <div><i class="bi bi-reply"></i> 붙이기</div>
         </a>
+        {#if mine}
+        <a href="/b/{bubble.id}/delete">
+          <div><i class="bi bi-trash"></i> 삭제</div>
+        </a>
+        {/if}
       </div>
     <slot></slot>
   </div>
@@ -56,5 +64,10 @@
   .footer {
     font-size: 0.8em;
     color: #666 !important;
+  }
+  .actions {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
   }
 </style>
