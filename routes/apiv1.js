@@ -52,7 +52,7 @@ function authenticateToken(req, res, next) {
 router.post("/auth/logins", async (req, res) => {
   const { username, password } = req.body;
   const password_hash = await hashPassword(password);
-  db.query("SELECT * FROM circles WHERE username = ? AND password_hash = ?", [username, password_hash])
+  db.query("SELECT * FROM circles WHERE username = ?", [username])
     .then(data => {
       const [rows, fields] = data;
       const row = rows[0];
@@ -61,13 +61,20 @@ router.post("/auth/logins", async (req, res) => {
         return;
       }
 
-      const ua = req.headers['user-agent'] || 'unknown';
-      const token = crypto.randomBytes(16).toString("hex");
-      db.query("INSERT INTO auths (circle_id, token, agent) VALUES (?, ?, ?)", [row.id, token, ua])
-      .then(() => {
-        res.json({ token });
-      }).catch(err => {
-        res.status(500).json({ error: err.message });
+      verifyPassword(password, row.password_hash).then(match => {
+        if (!match) {
+          res.status(401).json({ error: "Invalid credentials" });
+          return;
+        }
+
+        const ua = req.headers['user-agent'] || 'unknown';
+        const token = crypto.randomBytes(16).toString("hex");
+        db.query("INSERT INTO auths (circle_id, token, agent) VALUES (?, ?, ?)", [row.id, token, ua])
+        .then(() => {
+          res.json({ token });
+        }).catch(err => {
+          res.status(500).json({ error: err.message });
+        });
       });
     }).catch(err => {
       res.status(500).json({ error: err.message });
