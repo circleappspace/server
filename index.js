@@ -3,6 +3,7 @@ import path from 'path';
 import dotenv from "dotenv"
 
 import apiv1Router from "./routes/apiv1.js"
+import { handler } from "./build/handler.js"
 
 dotenv.config()
 
@@ -22,9 +23,11 @@ app.use(express.json())
 
 app.use('/api/v1', apiv1Router)
 
-app.get(/.*/, (req, res) => {
-  res.sendFile(path.join(__dirname, 'build/index.html'));
-});
+// app.get(/.*/, (req, res) => {
+//   res.sendFile(path.join(__dirname, 'build/index.html'));
+// });
+
+app.use(handler)
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`)
