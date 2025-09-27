@@ -344,4 +344,22 @@ router.delete("/bubbles/:id", authenticateToken, (req, res) => {
     });
 });
 
+router.get("/bubbles/:id/anchoreds", (req, res) => {
+  const { id } = req.params;
+  db.query(`
+    SELECT ${BUBBLE_JSON_FIELDS} AS bubble
+    FROM bubbles b
+    JOIN circles c ON b.circle_id = c.id
+    WHERE b.anchor = ?
+    ORDER BY b.id DESC
+    LIMIT 50
+  `, [id]).then(data => {
+    const [rows, fields] = data;
+    const bubbles = rows.map(row => JSON.parse(row.bubble));
+    res.json(bubbles);
+  }).catch(err => {
+    res.status(500).json({ error: err.message });
+  });
+});
+
 export default router;

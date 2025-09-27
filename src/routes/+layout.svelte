@@ -3,9 +3,6 @@
 </script>
 
 <div class="container">
-  <div class="footer">
-    <img src="/circle-icon-cherry.PNG" alt="Logo" width="24" height="24" />
-  </div>
   <slot />
   <Navigation />
   <div class="header">
@@ -22,7 +19,7 @@
     box-sizing: border-box;
   }
 
-  .header, .footer {
+  .header {
     display: flex;
     justify-content: center;
     align-items: center;
