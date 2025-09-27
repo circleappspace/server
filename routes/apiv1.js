@@ -42,15 +42,8 @@ function authenticateToken(req, res, next) {
         res.status(401).json({ error: "Invalid token" });
         return;
       }
-      verifyPassword(token, row.token).then(isValid => {
-        if (!isValid) {
-          res.status(401).json({ error: "Invalid token" });
-          return;
-        } else {
-          req.circle_id = row.circle_id;
-          next();
-        }
-      });
+      req.circle_id = row.circle_id;
+      next();
     }).catch(err => {
       res.status(500).json({ error: err.message });
     });
@@ -59,7 +52,7 @@ function authenticateToken(req, res, next) {
 router.post("/auth/logins", async (req, res) => {
   const { username, password } = req.body;
   const password_hash = await hashPassword(password);
-  db.query("SELECT * FROM circles WHERE username = ?", [username])
+  db.query("SELECT * FROM circles WHERE username = ? AND password_hash = ?", [username, password_hash])
     .then(data => {
       const [rows, fields] = data;
       const row = rows[0];

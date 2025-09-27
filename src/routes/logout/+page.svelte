@@ -9,9 +9,8 @@
       headers: {
         "Authorization": `Bearer ${token}`
       }
-    }).then(() => {
-      Cookies.remove("token");
     });
+    Cookies.remove("token");
     window.location.href = "/";
   });
 </script>
