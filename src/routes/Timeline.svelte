@@ -12,7 +12,7 @@
   onMount(() => {
     const url = username
       ? `/api/v1/circles/username/${username}/bubbles`
-      : !seeAllBubbles && token
+      : (!seeAllBubbles && token)
       ? `/api/v1/feed`
       : `/api/v1/bubbles`;
     fetch(url, {
@@ -25,6 +25,9 @@
         bubbles = data.reverse();
         await tick();
         window.scrollTo(0, document.body.scrollHeight);
+      })
+      .catch(error => {
+        console.error('Error fetching bubbles:', error);
       });
   });
 </script>
