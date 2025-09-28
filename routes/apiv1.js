@@ -9,7 +9,9 @@ const CIRCLE_JSON_FIELDS = `
     'id', c.id,
     'name', c.name,
     'username', c.username,
-    'bio', c.bio
+    'bio', c.bio,
+    'joins_count', (SELECT COUNT(*) FROM joins j WHERE j.joinee_id = c.id),
+    'joinedbys_count', (SELECT COUNT(*) FROM joins j WHERE j.joiner_id = c.id)
   )
 `;
 const BUBBLE_JSON_FIELDS = `
@@ -18,7 +20,8 @@ const BUBBLE_JSON_FIELDS = `
     'content', b.content,
     'timestamp', b.timestamp,
     'circle', ${CIRCLE_JSON_FIELDS},
-    'anchor', b.anchor
+    'anchor', b.anchor,
+    'anchoreds_count', (SELECT COUNT(*) FROM bubbles b2 WHERE b2.anchor = b.id)
   )
 `;
 

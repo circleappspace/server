@@ -5,7 +5,7 @@
   let name = '';
   let bio = '';
 
-  const username = Cookies.get('username');
+  let username = Cookies.get('username');
   const token = Cookies.get('token');
 
   onMount(() => {
@@ -14,6 +14,7 @@
       .then(data => {
         name = data.name || '';
         bio = data.bio || '';
+        username = data.username || '';
       })
       .catch(error => {
         console.error('Error fetching profile data:', error);
@@ -24,6 +25,7 @@
     const formData = new FormData(event.target);
     name = formData.get('name');
     bio = formData.get('bio');
+    username = formData.get('username');
 
     fetch(`/api/v1/circles`, {
       method: 'PUT',
@@ -31,10 +33,11 @@
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
-      body: JSON.stringify({ name, bio })
+      body: JSON.stringify({ name, bio, username })
     })
     .then(response => response.json())
     .then(data => {
+      Cookies.set('username', username);
       window.location.href = `/c/${username}`;
     })
     .catch((error) => {
@@ -44,9 +47,11 @@
 </script>
 
 <form on:submit|preventDefault={handleSubmit}>
-  <div>Name</div>
+  <div>핸들</div>
+  <input type="text" name="username" value={username}/>
+  <div>이름</div>
   <input type="text" name="name" value={name}/>
-  <div>Bio</div>
+  <div>자기소개</div>
   <textarea name="bio">{bio}</textarea>
-  <button type="submit">Submit</button>
+  <button type="submit">적용</button>
 </form>
