@@ -71,7 +71,8 @@ def create_database():
             popped_id INT NOT NULL,
             emoji VARCHAR(10) NOT NULL,
             FOREIGN KEY(popper_id) REFERENCES circles(id),
-            FOREIGN KEY(popped_id) REFERENCES bubbles(id)
+            FOREIGN KEY(popped_id) REFERENCES bubbles(id),
+            UNIQUE(popper_id, popped_id, emoji)
         );
     ''')
 

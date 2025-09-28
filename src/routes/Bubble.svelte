@@ -1,5 +1,4 @@
 <script>
-  import { onMount } from "svelte";
   import "bootstrap-icons/font/bootstrap-icons.css";
   import Cookies from "js-cookie";
 
@@ -10,9 +9,11 @@
   const username = Cookies.get("username");
   let mine = bubble.circle.username?.toLowerCase() === username?.toLowerCase();
 
+  let popped = false;
+
   function react() {
     fetch(`/api/v1/bubbles/${bubble.id}/pops`, {
-      method: "POST",
+      method: popped ? "DELETE" : "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${Cookies.get("token")}`,
@@ -21,7 +22,8 @@
     })
       .then((response) => response.json())
       .then((data) => {
-        bubble.pops_count++;
+        popped = !popped;
+        bubble.pops_count = Number(bubble.pops_count) + (popped ? 1 : -1);
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -60,7 +62,12 @@
         <i class="bi bi-reply"></i> {bubble.anchoreds_count}
       </a>
       <button on:click={react} style="background: none; border: none; padding: 0; cursor: pointer;">
-        <i class="bi bi-emoji-smile"></i> {bubble.pops_count}
+        {#if popped}
+        <i class="bi bi-emoji-smile-fill"></i>
+        {:else}
+        <i class="bi bi-emoji-smile"></i>
+        {/if}
+        {bubble.pops_count}
       </button>
     </div>
     <slot></slot>
