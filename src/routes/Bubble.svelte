@@ -9,41 +9,63 @@
 
   const username = Cookies.get("username");
   let mine = bubble.circle.username?.toLowerCase() === username?.toLowerCase();
+
+  function react() {
+    fetch(`/api/v1/bubbles/${bubble.id}/pops`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${Cookies.get("token")}`,
+      },
+      body: JSON.stringify({ emoji: "❤️" }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        bubble.pops_count++;
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  }
 </script>
 
-<a href="/b/{bubble.id}" style="text-decoration: none; color: inherit;" data-sveltekit-reload>
-  <div class="bubble">
-    <div class="self">
-      <div class="header">
-        {#if bubble.anchor}
-        <a href="/b/{bubble.anchor}" style="text-decoration: none; color: inherit;" data-sveltekit-reload>
-          <i class="bi bi-paperclip"></i> b/{bubble.anchor}
-        </a>
-        {/if}
-      </div>
-      <div class="name">{bubble.circle.name}</div>
-      <div class="content">
+<div class="bubble">
+  <div class="self">
+    <div class="header">
+      {#if bubble.anchor}
+      <a href="/b/{bubble.anchor}" style="text-decoration: none; color: inherit;" data-sveltekit-reload>
+        <i class="bi bi-paperclip"></i> b/{bubble.anchor}
+      </a>
+      {/if}
+    </div>
+    <div class="name">{bubble.circle.name}</div>
+    <div class="content">
+      <a href="/b/{bubble.id}" style="text-decoration: none; color: inherit;" data-sveltekit-reload>
         {#each paragraphs as paragraph}
         <div class="paragraph">{paragraph}</div>
         {/each}
-      </div>
-      <div class="footer">
-        {new Date(bubble.timestamp).toLocaleString()} ·
-        <a href="/c/{bubble.circle.username}">c/{bubble.circle.username}</a>
-      </div>
-      <div class="actions">
-        <a href="/b/{bubble.id}/attach">
-          <div><i class="bi bi-reply"></i> {bubble.anchoreds_count}</div>
-        </a>
-        {#if mine}
-        <a href="/b/{bubble.id}/delete">
-          <div><i class="bi bi-trash"></i> 삭제</div>
-        </a>
-        {/if}
-      </div>
+      </a>
+    </div>
+    <div class="footer">
+      {new Date(bubble.timestamp).toLocaleString()} ·
+      <a href="/c/{bubble.circle.username}">c/{bubble.circle.username}</a>
+    </div>
+    <div class="actions">
+      {#if mine}
+      <a href="/b/{bubble.id}/delete">
+        <i class="bi bi-trash"></i> 삭제
+      </a>
+      {/if}
+      <a href="/b/{bubble.id}/attach">
+        <i class="bi bi-reply"></i> {bubble.anchoreds_count}
+      </a>
+      <button on:click={react} style="background: none; border: none; padding: 0; cursor: pointer;">
+        <i class="bi bi-emoji-smile"></i> {bubble.pops_count}
+      </button>
+    </div>
     <slot></slot>
   </div>
-</a>
+</div>
 
 <style>
   .bubble {

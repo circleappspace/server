@@ -23,7 +23,8 @@ const BUBBLE_JSON_FIELDS = `
     'timestamp', b.timestamp,
     'circle', ${CIRCLE_JSON_FIELDS},
     'anchor', b.anchor,
-    'anchoreds_count', (SELECT COUNT(*) FROM bubbles b2 WHERE b2.anchor = b.id)
+    'anchoreds_count', (SELECT COUNT(*) FROM bubbles b2 WHERE b2.anchor = b.id),
+    'pops_count', (SELECT COUNT(*) FROM pops p WHERE p.popped_id = b.id)
   )
 `;
 
@@ -328,33 +329,14 @@ router.post("/bubbles", authenticateToken, (req, res) => {
 });
 
 router.get("/bubbles", (req, res) => {
-  db.query(`
+  const query = `
     SELECT ${BUBBLE_JSON_FIELDS} AS bubble
     FROM bubbles b
     JOIN circles c ON b.circle_id = c.id
     ORDER BY b.id DESC
     LIMIT 50
-  `).then(data => {
-    const [rows, fields] = data;
-    const bubbles = rows.map(row => JSON.parse(row.bubble));
-    res.json(bubbles);
-  }).catch(err => {
-    res.status(500).json({ error: err.message });
-  });
-});
-
-router.get("/feed", authenticateToken, (req, res) => {
-  const circle_id = req.circle_id;
-  db.query(`
-    SELECT ${BUBBLE_JSON_FIELDS} AS bubble
-    FROM bubbles b
-    JOIN circles c ON b.circle_id = c.id
-    WHERE b.circle_id IN (
-      SELECT joinee_id FROM joins WHERE joiner_id = ?
-    )
-    ORDER BY b.id DESC
-    LIMIT 50
-  `, [circle_id]).then(data => {
+  `;
+  db.query(query).then(data => {
     const [rows, fields] = data;
     const bubbles = rows.map(row => JSON.parse(row.bubble));
     res.json(bubbles);
@@ -409,6 +391,65 @@ router.get("/bubbles/:id/anchoreds", (req, res) => {
     ORDER BY b.id DESC
     LIMIT 50
   `, [id]).then(data => {
+    const [rows, fields] = data;
+    const bubbles = rows.map(row => JSON.parse(row.bubble));
+    res.json(bubbles);
+  }).catch(err => {
+    res.status(500).json({ error: err.message });
+  });
+});
+
+router.post("/bubbles/:id/pops", authenticateToken, (req, res) => {
+  const { id } = req.params;
+  const { emoji } = req.body;
+  const circle_id = req.circle_id;
+  db.query("INSERT INTO pops (popper_id, popped_id, emoji) VALUES (?, ?, ?)", [circle_id, id, emoji])
+    .then(() => {
+      res.status(201).json({ message: "OK" });
+    }).catch(err => {
+      if (err.code === 'ER_DUP_ENTRY') {
+        res.status(400).json({ error: "Already popped with this emoji" });
+      } else {
+        res.status(500).json({ error: err.message });
+      }
+    });
+});
+
+router.get("/bubbles/:id/pops", (req, res) => {
+  const { id } = req.params;
+  db.query("SELECT emoji, COUNT(*) AS count FROM pops WHERE popped_id = ? GROUP BY emoji", [id])
+    .then(data => {
+      const [rows, fields] = data;
+      res.json(rows);
+    }).catch(err => {
+      res.status(500).json({ error: err.message });
+    });
+});
+
+router.delete("/bubbles/:id/pops", authenticateToken, (req, res) => {
+  const { id } = req.params;
+  const { emoji } = req.body;
+  const circle_id = req.circle_id;
+  db.query("DELETE FROM pops WHERE popper_id = ? AND popped_id = ? AND emoji = ?", [circle_id, id, emoji])
+    .then(() => {
+      res.json({ message: "OK" });
+    }).catch(err => {
+      res.status(500).json({ error: err.message });
+    });
+});
+
+router.get("/feed", authenticateToken, (req, res) => {
+  const circle_id = req.circle_id;
+  db.query(`
+    SELECT ${BUBBLE_JSON_FIELDS} AS bubble
+    FROM bubbles b
+    JOIN circles c ON b.circle_id = c.id
+    WHERE b.circle_id IN (
+      SELECT joinee_id FROM joins WHERE joiner_id = ?
+    )
+    ORDER BY b.id DESC
+    LIMIT 50
+  `, [circle_id]).then(data => {
     const [rows, fields] = data;
     const bubbles = rows.map(row => JSON.parse(row.bubble));
     res.json(bubbles);

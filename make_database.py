@@ -16,13 +16,10 @@ def create_database():
     )
     cursor = conn.cursor()
 
+    cursor.execute('DROP DATABASE IF EXISTS circle;')
+
     cursor.execute('CREATE DATABASE IF NOT EXISTS circle;')
     cursor.execute('USE circle;')
-
-    cursor.execute('DROP TABLE IF EXISTS joins;')
-    cursor.execute('DROP TABLE IF EXISTS bubbles;')
-    cursor.execute('DROP TABLE IF EXISTS auths;')
-    cursor.execute('DROP TABLE IF EXISTS circles;')
 
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS circles (
@@ -64,6 +61,17 @@ def create_database():
             joinee_id INT,
             FOREIGN KEY(joiner_id) REFERENCES circles(id),
             FOREIGN KEY(joinee_id) REFERENCES circles(id)
+        );
+    ''')
+
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS pops (
+            id INT PRIMARY KEY AUTO_INCREMENT,
+            popper_id INT NOT NULL,
+            popped_id INT NOT NULL,
+            emoji VARCHAR(10) NOT NULL,
+            FOREIGN KEY(popper_id) REFERENCES circles(id),
+            FOREIGN KEY(popped_id) REFERENCES bubbles(id)
         );
     ''')
 

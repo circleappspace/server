@@ -1,0 +1,7 @@
+POST localhost:3000/api/v1/bubbles/3/pops
+Content-Type: application/json
+Authorization: Bearer 9fed731663b2c77301503bfeaa661187
+
+{
+  "emoji": "🔥"
+}

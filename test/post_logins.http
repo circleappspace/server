@@ -1,7 +1,7 @@
-POST localhost:3000/api/v1/logins
+POST localhost:3000/api/v1/auth/logins
 Content-Type: application/json
 
 {
-  "username": "user1",
-  "password_hash": "hash1"
+  "username": "testuser1",
+  "password": "password"
 }
