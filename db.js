@@ -15,4 +15,12 @@ const db = mysql.createPool({
   keepAliveInitialDelay: 0
 });
 
+setInterval(async () => {
+  try {
+    await db.query('SELECT 1');
+  } catch (e) {
+    console.error('Ping failed:', e);
+  }
+}, 30000);
+
 export default db;
