@@ -40,3 +40,7 @@ input:focus, select:focus, textarea:focus, button:focus {
 input, select, textarea {
     width: 100%;
 }
+
+input[type="checkbox"], input[type="radio"] {
+    width: auto;
+}

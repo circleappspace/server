@@ -7,11 +7,12 @@
 
   let bubbles = [];
   const token = Cookies.get('token');
+  const seeAllBubbles = Cookies.get('seeAllBubbles') === 'true';
 
   onMount(() => {
     const url = username
       ? `/api/v1/circles/username/${username}/bubbles`
-      : token
+      : !seeAllBubbles && token
       ? `/api/v1/feed`
       : `/api/v1/bubbles`;
     fetch(url, {
