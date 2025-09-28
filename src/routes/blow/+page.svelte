@@ -48,3 +48,9 @@
     </div>
   </form>
 </div>
+
+<style>
+  textarea {
+    resize: none;
+  }
+</style>

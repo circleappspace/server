@@ -41,6 +41,12 @@
   <div>로딩 중 ...</div>
 {/if}
 <form on:submit|preventDefault={blowAnchoredBubble}>
-  <textarea height="10" name="content"></textarea>
+  <textarea rows="10" name="content" placeholder="버블렛은 방울방울"></textarea>
   <button type="submit">불기</button>
 </form>
+
+<style>
+  textarea {
+    resize: none;
+  }
+</style>
