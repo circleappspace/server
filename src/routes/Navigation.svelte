@@ -5,27 +5,18 @@
 
   let token = Cookies.get('token');
   let username = Cookies.get('username');
-
-  function home(event) {
-    event.preventDefault();
-    if (window.location.pathname === '/') {
-      window.location.reload();
-      return;
-    }
-    window.location.href = '/';
-  }
 </script>
 
 <div class="navigation">
-  <div><a href="/" on:click={home}><i class="bi bi-house"></i> 홈</a></div>
+  <div><a href="/" data-sveltekit-reload><i class="bi bi-house"></i> 홈</a></div>
   {#if token}
   <div><a href="/logout"><i class="bi bi-box-arrow-right"></i> 로그아웃</a></div>
   <div><a href="/blow"><i class="bi bi-wind"></i> 불기</a></div>
   <div><a href="/settings"><i class="bi bi-gear"></i> 설정</a></div>
   <div><a href="/c/{username}" data-sveltekit-reload><i class="bi bi-person-circle"></i> 서클</a></div>
   {:else}
-  <div><a href="/login"><i class="bi bi-box-arrow-in-right"></i> 로그인</a></div>
-  <div><a href="/register"><i class="bi bi-person-plus"></i> 회원가입</a></div>
+  <div><a href="/login" data-sveltekit-reload><i class="bi bi-box-arrow-in-right"></i> 로그인</a></div>
+  <div><a href="/register" data-sveltekit-reload><i class="bi bi-person-plus"></i> 회원가입</a></div>
   {/if}
 </div>
 
