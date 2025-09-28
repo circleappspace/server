@@ -36,10 +36,10 @@
 </div>
 <div class="action-buttons">
   <a href="/c/{username}/joins" class="view-members-button">
-    <i class="bi bi-people"></i> 참가 서클
+    <i class="bi bi-people"></i> 참가 서클 {circle.joins_count}
   </a>
   <a href="/c/{username}/joiners" class="view-joiners-button">
-    <i class="bi bi-people"></i> 참가자
+    <i class="bi bi-people"></i> 참가자 {circle.joinedbys_count}
   </a>
   {#if token}
     {#if mine}

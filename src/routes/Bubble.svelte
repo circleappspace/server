@@ -33,7 +33,7 @@
       </div>
       <div class="actions">
         <a href="/b/{bubble.id}/attach">
-          <div><i class="bi bi-reply"></i> 붙이기</div>
+          <div><i class="bi bi-reply"></i> {bubble.anchoreds_count}</div>
         </a>
         {#if mine}
         <a href="/b/{bubble.id}/delete">

@@ -30,7 +30,8 @@ def create_database():
             username VARCHAR(50) UNIQUE,
             password_hash VARCHAR(255) NOT NULL,
             name VARCHAR(100) NOT NULL,
-            bio VARCHAR(256) DEFAULT ''
+            bio VARCHAR(256) DEFAULT '',
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         );
     ''')
 
@@ -64,24 +65,6 @@ def create_database():
             FOREIGN KEY(joiner_id) REFERENCES circles(id),
             FOREIGN KEY(joinee_id) REFERENCES circles(id)
         );
-    ''')
-
-    # 샘플 데이터 삽입
-    for i in range(1, 6):
-        cursor.execute('''
-            INSERT INTO circles (username, password_hash, name, bio)
-            VALUES (%s, %s, %s, %s);
-        ''', (f'user{i}', 'hashed_password', f'User {i}', f'This is user {i}\'s bio.'))
-
-        for j in range(1, 4):
-            cursor.execute('''
-                INSERT INTO bubbles (circle_id, content)
-                VALUES (%s, %s);
-            ''', (i, f'This is bubble {j} from user {i}.'))
-
-    cursor.execute('''
-        INSERT INTO joins (joiner_id, joinee_id)
-        VALUES (1, 2), (1, 3), (2, 3), (4, 5);
     ''')
 
     conn.commit()
