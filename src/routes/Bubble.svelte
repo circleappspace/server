@@ -1,6 +1,7 @@
 <script>
   import "bootstrap-icons/font/bootstrap-icons.css";
   import Cookies from "js-cookie";
+  import { onMount } from "svelte";
 
   export let bubble;
 
@@ -9,11 +10,28 @@
   const username = Cookies.get("username");
   let mine = bubble.circle.username?.toLowerCase() === username?.toLowerCase();
 
-  let popped = false;
+  let popped = [];
+
+  onMount(() => {
+    fetch(`/api/v1/bubbles/${bubble.id}/is_popped`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${Cookies.get("token")}`,
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        popped = data.popped;
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  });
 
   function react() {
     fetch(`/api/v1/bubbles/${bubble.id}/pops`, {
-      method: popped ? "DELETE" : "POST",
+      method: (popped.indexOf("❤️") !== -1) ? "DELETE" : "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${Cookies.get("token")}`,
@@ -22,8 +40,13 @@
     })
       .then((response) => response.json())
       .then((data) => {
-        popped = !popped;
-        bubble.pops_count = Number(bubble.pops_count) + (popped ? 1 : -1);
+        if (popped.indexOf("❤️") !== -1) {
+          popped = popped.filter((e) => e !== "❤️");
+          bubble.pops_count = Number(bubble.pops_count) - 1;
+        } else {
+          popped.push("❤️");
+          bubble.pops_count = Number(bubble.pops_count) + 1;
+        }
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -62,7 +85,7 @@
         <i class="bi bi-reply"></i> {bubble.anchoreds_count}
       </a>
       <button on:click={react} style="background: none; border: none; padding: 0; cursor: pointer;">
-        {#if popped}
+        {#if popped.length > 0}
         <i class="bi bi-emoji-smile-fill"></i>
         {:else}
         <i class="bi bi-emoji-smile"></i>
