@@ -28,6 +28,8 @@ const BUBBLE_JSON_FIELDS = `
   )
 `;
 
+const USERNAME_REGEX = /^[a-zA-Z0-9_]{1,50}$/;
+
 async function hashPassword(plain) {
   return await argon2.hash(plain, {
     type: argon2.argon2id,
@@ -132,6 +134,10 @@ router.delete("/auth/logins", authenticateToken, (req, res) => {
 
 router.post("/auth/register", async (req, res) => {
   const { name, username, password } = req.body;
+  if (!username.match(USERNAME_REGEX)) {
+    res.status(400).json({ error: "Invalid username" });
+    return;
+  }
   const password_hash = await hashPassword(password)
   db.query("INSERT INTO circles (name, username, password_hash) VALUES (?, ?, ?)", [name, username, password_hash])
     .then(() => {
@@ -177,6 +183,10 @@ router.put("/circles", authenticateToken, (req, res) => {
     params.push(name);
   }
   if (username !== undefined) {
+    if (!username.match(USERNAME_REGEX)) {
+      res.status(400).json({ error: "Invalid username" });
+      return;
+    }
     updates.push("username = ?");
     params.push(username);
   }
