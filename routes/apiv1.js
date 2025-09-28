@@ -10,8 +10,8 @@ const CIRCLE_JSON_FIELDS = `
     'name', c.name,
     'username', c.username,
     'bio', c.bio,
-    'joins_count', (SELECT COUNT(*) FROM joins j WHERE j.joinee_id = c.id),
-    'joinedbys_count', (SELECT COUNT(*) FROM joins j WHERE j.joiner_id = c.id),
+    'joins_count', (SELECT COUNT(*) FROM joins j WHERE j.joiner_id = c.id),
+    'joinedbys_count', (SELECT COUNT(*) FROM joins j WHERE j.joinee_id = c.id),
     'created_at', c.created_at,
     'bubbles_count', (SELECT COUNT(*) FROM bubbles b WHERE b.circle_id = c.id)
   )

@@ -49,11 +49,11 @@
     {/if}
     {#if joined}
     <a href="/c/{username}/leave" class="leave-circle-button">
-      <i class="bi bi-dash-circle"></i> 탈퇴
+      <i class="bi bi-dash-circle"></i> 나가기
     </a>
     {:else}
     <a href="/c/{username}/join" class="join-circle-button">
-      <i class="bi bi-plus-circle"></i> 가입
+      <i class="bi bi-plus-circle"></i> 참가
     </a>
     {/if}
   {/if}
