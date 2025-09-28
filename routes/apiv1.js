@@ -152,23 +152,6 @@ router.get("/auth/me", authenticateToken, (req, res) => {
     });
 });
 
-router.get("/circles/:id", (req, res) => {
-  const { id } = req.params;
-  db.query(`SELECT ${CIRCLE_JSON_FIELDS} AS circle FROM circles c WHERE id = ?`, [id])
-    .then(data => {
-      const [rows, fields] = data;
-      const row = rows[0];
-      if (!row) {
-        res.status(404).json({ error: "Circle not found" });
-        return;
-      }
-      const circle = JSON.parse(row.circle);
-      res.json(circle);
-    }).catch(err => {
-      res.status(500).json({ error: err.message });
-    });
-});
-
 router.put("/circles", authenticateToken, (req, res) => {
   const id = req.circle_id;
   const { name, username, bio } = req.body;
@@ -195,6 +178,58 @@ router.put("/circles", authenticateToken, (req, res) => {
   db.query(sql, params)
     .then(() => {
       res.json({ message: "OK" });
+    }).catch(err => {
+      res.status(500).json({ error: err.message });
+    });
+});
+
+router.get("/circles/username/:username", (req, res) => {
+  const { username } = req.params;
+  db.query(`SELECT ${CIRCLE_JSON_FIELDS} AS circle FROM circles c WHERE c.username = ?`, [username])
+    .then(data => {
+      const [rows, fields] = data;
+      const row = rows[0];
+      if (!row) {
+        res.status(404).json({ error: "Circle not found" });
+        return;
+      }
+      const circle = JSON.parse(row.circle);
+      res.json(circle);
+    }).catch(err => {
+      res.status(500).json({ error: err.message });
+    });
+});
+
+router.get("/circles/username/:username/bubbles", (req, res) => {
+  const { username } = req.params;
+  db.query(`
+    SELECT ${BUBBLE_JSON_FIELDS} AS bubble
+    FROM bubbles b
+    JOIN circles c ON b.circle_id = c.id
+    WHERE c.username = ?
+    ORDER BY b.id DESC
+    LIMIT 50
+  `, [username]).then(data => {
+    const [rows, fields] = data;
+    const bubbles = rows.map(row => JSON.parse(row.bubble));
+    res.json(bubbles);
+  }).catch(err => {
+    res.status(500).json({ error: err.message });
+  });
+});
+
+router.get("/circles/:id", (req, res) => {
+  const { id } = req.params;
+  db.query(`SELECT ${CIRCLE_JSON_FIELDS} AS circle FROM circles c WHERE id = ?`, [id])
+    .then(data => {
+      const [rows, fields] = data;
+      const row = rows[0];
+      if (!row) {
+        res.status(404).json({ error: "Circle not found" });
+        return;
+      }
+      const circle = JSON.parse(row.circle);
+      res.json(circle);
     }).catch(err => {
       res.status(500).json({ error: err.message });
     });
@@ -275,41 +310,6 @@ router.delete("/circles/:id/joinedbys", authenticateToken, (req, res) => {
     });
 });
 
-router.get("/circles/username/:username", (req, res) => {
-  const { username } = req.params;
-  db.query(`SELECT ${CIRCLE_JSON_FIELDS} AS circle FROM circles c WHERE c.username = ?`, [username])
-    .then(data => {
-      const [rows, fields] = data;
-      const row = rows[0];
-      if (!row) {
-        res.status(404).json({ error: "Circle not found" });
-        return;
-      }
-      const circle = JSON.parse(row.circle);
-      res.json(circle);
-    }).catch(err => {
-      res.status(500).json({ error: err.message });
-    });
-});
-
-router.get("/circles/username/:username/bubbles", (req, res) => {
-  const { username } = req.params;
-  db.query(`
-    SELECT ${BUBBLE_JSON_FIELDS} AS bubble
-    FROM bubbles b
-    JOIN circles c ON b.circle_id = c.id
-    WHERE c.username = ?
-    ORDER BY b.id DESC
-    LIMIT 50
-  `, [username]).then(data => {
-    const [rows, fields] = data;
-    const bubbles = rows.map(row => JSON.parse(row.bubble));
-    res.json(bubbles);
-  }).catch(err => {
-    res.status(500).json({ error: err.message });
-  });
-});
-
 router.post("/bubbles", authenticateToken, (req, res) => {
   const { content, anchor } = req.body;
   const circle_id = req.circle_id;
@@ -330,6 +330,26 @@ router.get("/bubbles", (req, res) => {
     ORDER BY b.id DESC
     LIMIT 50
   `).then(data => {
+    const [rows, fields] = data;
+    const bubbles = rows.map(row => JSON.parse(row.bubble));
+    res.json(bubbles);
+  }).catch(err => {
+    res.status(500).json({ error: err.message });
+  });
+});
+
+router.get("/bubbles/feed", authenticateToken, (req, res) => {
+  const circle_id = req.circle_id;
+  db.query(`
+    SELECT ${BUBBLE_JSON_FIELDS} AS bubble
+    FROM bubbles b
+    JOIN circles c ON b.circle_id = c.id
+    WHERE b.circle_id IN (
+      SELECT joinee_id FROM joins WHERE joiner_id = ?
+    )
+    ORDER BY b.id DESC
+    LIMIT 50
+  `, [circle_id]).then(data => {
     const [rows, fields] = data;
     const bubbles = rows.map(row => JSON.parse(row.bubble));
     res.json(bubbles);
