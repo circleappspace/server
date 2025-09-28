@@ -8,7 +8,7 @@
   const paragraphs = bubble.content.split("\n").filter((p) => p.trim() !== "");
 
   const username = Cookies.get("username");
-  let mine = bubble.circle.username.toLowerCase() === username?.toLowerCase();
+  let mine = bubble.circle.username?.toLowerCase() === username?.toLowerCase();
 </script>
 
 <a href="/b/{bubble.id}" style="text-decoration: none; color: inherit;" data-sveltekit-reload>
