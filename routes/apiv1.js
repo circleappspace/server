@@ -338,7 +338,7 @@ router.get("/bubbles", (req, res) => {
   });
 });
 
-router.get("/bubbles/feed", authenticateToken, (req, res) => {
+router.get("/feed", authenticateToken, (req, res) => {
   const circle_id = req.circle_id;
   db.query(`
     SELECT ${BUBBLE_JSON_FIELDS} AS bubble

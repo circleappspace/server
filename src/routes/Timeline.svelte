@@ -12,7 +12,7 @@
     const url = username
       ? `/api/v1/circles/username/${username}/bubbles`
       : token
-      ? `/api/v1/bubbles/feed`
+      ? `/api/v1/feed`
       : `/api/v1/bubbles`;
     fetch(url, {
       headers: {
