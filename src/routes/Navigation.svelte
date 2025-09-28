@@ -21,6 +21,7 @@
   {#if token}
   <div><a href="/logout"><i class="bi bi-box-arrow-right"></i> 로그아웃</a></div>
   <div><a href="/blow"><i class="bi bi-wind"></i> 불기</a></div>
+  <div><a href="/settings"><i class="bi bi-gear"></i> 설정</a></div>
   <div><a href="/c/{username}" data-sveltekit-reload><i class="bi bi-person-circle"></i> 서클</a></div>
   {:else}
   <div><a href="/login"><i class="bi bi-box-arrow-in-right"></i> 로그인</a></div>
@@ -34,6 +35,7 @@
     gap: 1rem;
     padding: 0.5rem 1rem;
     justify-content: center;
+    flex-wrap: wrap;
   }
   .navigation div {
     display: flex;
@@ -47,5 +49,6 @@
   .navigation a:hover {
     color: #007bff;
   }
+
   .bi { margin-right: 0.5rem; }
 </style>
