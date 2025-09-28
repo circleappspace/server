@@ -12,6 +12,7 @@
     });
     Cookies.remove("token");
     Cookies.remove("username");
+    Cookies.remove("id");
     window.location.href = "/";
   });
 </script>

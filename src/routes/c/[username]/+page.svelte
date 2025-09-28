@@ -1,62 +1,52 @@
 <script>
-  import { page } from "$app/stores";
   import { onMount } from "svelte";
-  import Timeline from "../..//Timeline.svelte";
   import Cookies from "js-cookie";
   import "bootstrap-icons/font/bootstrap-icons.css";
+  import { page } from "$app/stores";
 
-  let username = $page.params.username;
-  let circle = {};
+  export let data;
+
+  let circle = data.circle;
+
+  const username = $page.params.username;
+  const mine = username === Cookies.get("username");
+  const token = Cookies.get("token");
+
+  let joined = false;
 
   onMount(() => {
-    fetch(`/api/v1/circles/username/${username}`)
+    fetch(`/api/v1/circles/${circle.id}/is_joined`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then((res) => res.json())
       .then((data) => {
-        circle = data;
+        joined = data.joined;
       });
   });
-
-  let mine = username === Cookies.get("username");
 </script>
 
-<Timeline {username} />
-
-<div class="circle-info">
-  <div class="name">{circle.name}</div>
-  <div class="username">c/{circle.username}</div>
-  <div class="bio">{circle.bio}</div>
-</div>
-
-{#if mine}
 <div class="action-buttons">
+{#if token}
+  {#if mine}
   <a href="/settings/circle" class="edit-circle-button">
     <i class="bi bi-pencil-square"></i> 편집
   </a>
-</div>
+  {/if}
+  {#if joined}
+  <a href="/c/{username}/leave" class="leave-circle-button">
+    <i class="bi bi-dash-circle"></i> 탈퇴
+  </a>
+  {:else}
+  <a href="/c/{username}/join" class="join-circle-button">
+    <i class="bi bi-plus-circle"></i> 가입
+  </a>
+  {/if}
 {/if}
+</div>
 
 <style>
-  .circle-info {
-    text-align: center;
-    margin: 20px 0;
-  }
-
-  .name {
-    font-size: 24px;
-    font-weight: bold;
-  }
-
-  .username {
-    font-size: 18px;
-    color: #666;
-  }
-
-  .bio {
-    margin-top: 10px;
-    font-size: 16px;
-    color: #333;
-  }
-
   .action-buttons {
     display: flex;
     justify-content: center;

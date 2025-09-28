@@ -4,26 +4,7 @@
   import "bootstrap-icons/font/bootstrap-icons.css";
 
   let token = Cookies.get('token');
-  let myUsername;
-
-  onMount(() => {
-    if (!token) return;
-
-    fetch('/api/v1/auth/me', {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    })
-    .then(response => response.json())
-    .then(data => {
-      myUsername = data.username;
-    })
-    .catch(error => {
-      console.error('Error fetching user data:', error);
-      token = null;
-      Cookies.remove('token');
-    });
-  });
+  let username = Cookies.get('username');
 
   function home(event) {
     event.preventDefault();
@@ -40,7 +21,7 @@
   {#if token}
   <div><a href="/logout"><i class="bi bi-box-arrow-right"></i> 로그아웃</a></div>
   <div><a href="/blow"><i class="bi bi-wind"></i> 불기</a></div>
-  <div><a href="/c/{myUsername}" data-sveltekit-reload><i class="bi bi-person-circle"></i> 서클</a></div>
+  <div><a href="/c/{username}" data-sveltekit-reload><i class="bi bi-person-circle"></i> 서클</a></div>
   {:else}
   <div><a href="/login"><i class="bi bi-box-arrow-in-right"></i> 로그인</a></div>
   <div><a href="/register"><i class="bi bi-person-plus"></i> 회원가입</a></div>

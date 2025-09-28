@@ -85,11 +85,13 @@ router.post("/auth/logins", async (req, res) => {
           return;
         }
 
+        row.password_hash = undefined;
+
         const ua = req.headers['user-agent'] || 'unknown';
         const token = crypto.randomBytes(16).toString("hex");
         db.query("INSERT INTO auths (circle_id, token, agent) VALUES (?, ?, ?)", [row.id, token, ua])
         .then(() => {
-          res.json({ token });
+          res.json({ token, circle: row });
         }).catch(err => {
           res.status(500).json({ error: err.message });
         });
@@ -222,29 +224,30 @@ router.get("/circles/:id/joins", (req, res) => {
     });
 });
 
-router.post("/circles/:id/joins", authenticateToken, (req, res) => {
+router.get("/circles/:id/is_joined", authenticateToken, (req, res) => {
   const { id } = req.params;
   const joiner_id = req.circle_id;
-  if (parseInt(id) === joiner_id) {
-    res.status(400).json({ error: "Cannot join yourself" });
-    return;
-  }
-  db.query("INSERT INTO joins (joiner_id, joinee_id) VALUES (?, ?)", [joiner_id, id])
-    .then(() => {
-      res.json({ message: "Joined successfully" });
+  db.query("SELECT * FROM joins WHERE joiner_id = ? AND joinee_id = ?", [joiner_id, id])
+    .then(data => {
+      const [rows, fields] = data;
+      res.json({ joined: rows.length > 0 });
     }).catch(err => {
       res.status(500).json({ error: err.message });
     });
 });
 
-router.delete("/circles/:id/joins", authenticateToken, (req, res) => {
+router.post("/circles/:id/joinedbys", authenticateToken, (req, res) => {
   const { id } = req.params;
   const joiner_id = req.circle_id;
-  db.query("DELETE FROM joins WHERE joiner_id = ? AND joinee_id = ?", [joiner_id, id])
+  db.query("INSERT INTO joins (joiner_id, joinee_id) VALUES (?, ?)", [joiner_id, id])
     .then(() => {
-      res.json({ message: "Unjoined successfully" });
+      res.status(201).json({ message: "OK" });
     }).catch(err => {
-      res.status(500).json({ error: err.message });
+      if (err.code === 'ER_DUP_ENTRY') {
+        res.status(400).json({ error: "Already joined" });
+      } else {
+        res.status(500).json({ error: err.message });
+      }
     });
 });
 
@@ -257,6 +260,17 @@ router.get("/circles/:id/joinedbys", (req, res) => {
       res.json(circles);
     })
     .catch(err => {
+      res.status(500).json({ error: err.message });
+    });
+});
+
+router.delete("/circles/:id/joinedbys", authenticateToken, (req, res) => {
+  const { id } = req.params;
+  const joiner_id = req.circle_id;
+  db.query("DELETE FROM joins WHERE joiner_id = ? AND joinee_id = ?", [joiner_id, id])
+    .then(() => {
+      res.json({ message: "OK" });
+    }).catch(err => {
       res.status(500).json({ error: err.message });
     });
 });

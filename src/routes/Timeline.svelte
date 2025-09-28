@@ -2,12 +2,12 @@
   import { onMount, tick } from 'svelte';
   import Bubble from './Bubble.svelte';
 
-  export let username = "";
+  export let username;
 
   let bubbles = [];
 
   onMount(() => {
-    const url = username.length > 0
+    const url = username
       ? `/api/v1/circles/username/${username}/bubbles`
       : `/api/v1/bubbles`;
     fetch(url)

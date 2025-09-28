@@ -23,6 +23,7 @@
       if (data.token) {
         Cookies.set('token', data.token);
         Cookies.set('username', username);
+        Cookies.set('id', data.circle.id);
         window.location.href = '/';
       } else {
         alert('Login failed: ' + (data.error || 'Unknown error'));
