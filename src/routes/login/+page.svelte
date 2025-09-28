@@ -27,6 +27,7 @@
         window.location.href = '/';
       } else {
         alert('Login failed: ' + (data.error || 'Unknown error'));
+        loggingIn = false;
       }
     });
   }

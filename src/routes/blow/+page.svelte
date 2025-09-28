@@ -1,11 +1,15 @@
 <script>
   import Cookies from 'js-cookie';
 
+  let blowing = false;
+
   function handleSubmit(e) {
     e.preventDefault();
     const formData = new FormData(e.target);
     const content = formData.get('content');
     const token = Cookies.get('token');
+
+    blowing = true;
 
     fetch("/api/v1/bubbles", {
       method: "POST",
@@ -21,6 +25,7 @@
     })
     .catch((error) => {
       alert('Error:', error);
+      blowing = false;
     });
   }
 </script>
@@ -30,13 +35,16 @@
     <div>
       <textarea
         rows="10"
-        cols="50"
-        placeholder="Enter your text here..."
+        placeholder="생각은 방울방울"
         name="content"
         ></textarea>
     </div>
     <div>
-      <button type="submit">불기</button>
+      {#if blowing}
+        <button type="submit" disabled>버블 부는 중...</button>
+      {:else}
+        <button type="submit">버블 불기</button>
+      {/if}
     </div>
   </form>
 </div>

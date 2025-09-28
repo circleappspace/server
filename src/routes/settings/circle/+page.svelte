@@ -27,6 +27,19 @@
     bio = formData.get('bio');
     username = formData.get('username');
 
+    if (bio.length > 256) {
+      alert('자기소개는 256자 이내로 작성해주세요.');
+      return;
+    }
+    if (name.length > 100) {
+      alert('이름은 100자 이내로 작성해주세요.');
+      return;
+    }
+    if (username.length > 50) {
+      alert('핸들은 50자 이내로 작성해주세요.');
+      return;
+    }
+
     fetch(`/api/v1/circles`, {
       method: 'PUT',
       headers: {
