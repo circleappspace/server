@@ -135,9 +135,18 @@ router.post("/auth/register", async (req, res) => {
   const password_hash = await hashPassword(password)
   db.query("INSERT INTO circles (name, username, password_hash) VALUES (?, ?, ?)", [name, username, password_hash])
     .then(() => {
-      res.status(201).json({ message: "OK" });
+      db.query("INSERT INTO joins (joiner_id, joinee_id) SELECT id, id FROM circles WHERE username = ?", [username])
+        .then(() => {
+          res.status(201).json({ message: "OK" });
+        }).catch(err => {
+          res.status(500).json({ error: err.message });
+        });
     }).catch(err => {
-      res.status(500).json({ error: err.message });
+      if (err.code === 'ER_DUP_ENTRY') {
+        res.status(400).json({ error: "Username already taken" });
+      } else {
+        res.status(500).json({ error: err.message });
+      }
     });
 });
 
