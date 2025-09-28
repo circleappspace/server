@@ -86,5 +86,6 @@
     justify-content: center;
     margin: 20px;
     gap: 10px;
+    flex-wrap: wrap;
   }
 </style>
