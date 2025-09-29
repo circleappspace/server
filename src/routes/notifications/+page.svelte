@@ -4,6 +4,7 @@
   import dayjs from 'dayjs';
   import relativeTime from 'dayjs/plugin/relativeTime';
   import 'dayjs/locale/ko';
+  import { josa } from "es-hangul";
 
   dayjs.locale('ko');
 
@@ -53,11 +54,11 @@
         {:else if notification.type === 'pop'}
           내 버블
           <a href="b/{notification.bubble_id}">b/{notification.bubble_id}</a>
-          이(가)
+          {josa.pick(notification.bubble_id, "이/가")}
           <a href="c/{notification.circle_username}">c/{notification.circle_username}</a>
           님에 의해
           {notification.emoji}
-          (으)로 팝되었습니다.
+          {josa.pick(notification.emoji, "로/으로")} 팝되었습니다.
         {:else if notification.type === 'bubblet'}
           내 버블
           <a href="b/{notification.bubble_id}">b/{notification.bubble_id}</a>
