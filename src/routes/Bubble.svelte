@@ -2,6 +2,11 @@
   import "bootstrap-icons/font/bootstrap-icons.css";
   import Cookies from "js-cookie";
   import { onMount } from "svelte";
+  import dayjs from "dayjs";
+  import relativeTime from "dayjs/plugin/relativeTime";
+  import "dayjs/locale/ko";
+
+  dayjs.locale("ko");
 
   export let bubble;
 
@@ -52,6 +57,11 @@
         console.error("Error:", error);
       });
   }
+
+  function formatTimestamp(timestamp) {
+    dayjs.extend(relativeTime);
+    return dayjs(timestamp).fromNow();
+  }
 </script>
 
 <div class="bubble">
@@ -63,17 +73,21 @@
       </a>
       {/if}
     </div>
-    <div class="name">{bubble.circle.name}</div>
+    <div class="circle">
+      <span class="name">{bubble.circle.name}</span>
+      <span class="username">
+        <a href="/c/{bubble.circle.username}" data-sveltekit-reload>c/{bubble.circle.username}</a> ·
+      </span>
+      <span class="timestamp">
+        {formatTimestamp(bubble.timestamp)}
+      </span>
+    </div>
     <div class="content">
       <a href="/b/{bubble.id}" style="text-decoration: none; color: inherit;" data-sveltekit-reload>
         {#each paragraphs as paragraph}
         <div class="paragraph">{paragraph}</div>
         {/each}
       </a>
-    </div>
-    <div class="footer">
-      {new Date(bubble.timestamp).toLocaleString()} ·
-      <a href="/c/{bubble.circle.username}" data-sveltekit-reload>c/{bubble.circle.username}</a>
     </div>
     <div class="actions">
       {#if mine}
@@ -100,26 +114,48 @@
 <style>
   .bubble {
     padding: 10px;
-    margin: 10px 0;
+    margin: 5px 0;
     border-left: 4px solid var(--primary-color);
   }
-  .name {
+  .self {
+    display: flex;
+    flex-direction: column;
+  }
+  .header {
+    font-size: 0.9em;
+    color: var(--secondary-text-color);
+    margin-bottom: 5px;
+  }
+  .circle {
     font-weight: bold;
     margin-bottom: 5px;
   }
-  .content {
-    margin-bottom: 5px;
+  .circle .username, .circle .timestamp {
+    font-weight: normal;
+    color: var(--secondary-text-color);
   }
-  .paragraph {
-    margin-bottom: 5px;
-  }
-  .footer {
+  .timestamp {
     font-size: 0.8em;
-    color: #666 !important;
+  }
+  .content {
+    margin-bottom: 10px;
+    white-space: pre-wrap;
   }
   .actions {
-    margin-top: 10px;
     display: flex;
-    gap: 10px;
+    gap: 15px;
+    font-size: 0.9em;
+  }
+  .actions a, .actions button {
+    text-decoration: none;
+  }
+  .actions a:hover, .actions button:hover {
+    color: var(--primary-color);
+  }
+  .actions button {
+    font: inherit;
+  }
+  .actions i {
+    margin-right: 5px;
   }
 </style>
