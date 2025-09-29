@@ -1,38 +1,10 @@
 <script>
-  import { onMount } from 'svelte';
-  import { page } from '$app/stores';
+  import BlowForm from "../../../BlowForm.svelte";
   import Bubble from "../../../Bubble.svelte";
-  import Cookies from 'js-cookie';
 
-  let { bubbleId } = $page.params;
-  let bubble;
+  export let data;
 
-  onMount(() => {
-    fetch(`/api/v1/bubbles/${bubbleId}`)
-      .then(response => response.json())
-      .then(data => {
-        bubble = data;
-      });
-  });
-
-  function blowAnchoredBubble(event) {
-    const formData = new FormData(event.target);
-    const content = formData.get('content');
-    const token = Cookies.get('token');
-
-    fetch(`/api/v1/bubbles`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        "Authorization": `Bearer ${token}`
-      },
-      body: JSON.stringify({ content, anchor: bubbleId })
-    })
-      .then(response => response.json())
-      .then(data => {
-        window.location.href = `/b/${bubbleId}`;
-      });
-  }
+  let { bubble } = data;
 </script>
 
 {#if bubble}
@@ -40,10 +12,7 @@
 {:else}
   <div>로딩 중 ...</div>
 {/if}
-<form on:submit|preventDefault={blowAnchoredBubble}>
-  <textarea rows="10" name="content" placeholder="버블렛은 방울방울"></textarea>
-  <button type="submit">불기</button>
-</form>
+<BlowForm anchor={bubble.id} redirectTo={`/b/${bubble.id}`} />
 
 <style>
   textarea {
