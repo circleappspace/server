@@ -73,7 +73,7 @@
     </div>
     <div class="footer">
       {new Date(bubble.timestamp).toLocaleString()} ·
-      <a href="/c/{bubble.circle.username}">c/{bubble.circle.username}</a>
+      <a href="/c/{bubble.circle.username}" data-sveltekit-reload>c/{bubble.circle.username}</a>
     </div>
     <div class="actions">
       {#if mine}
