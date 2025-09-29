@@ -13,9 +13,3 @@
   <div>로딩 중 ...</div>
 {/if}
 <BlowForm anchor={bubble.id} redirectTo={`/b/${bubble.id}`} />
-
-<style>
-  textarea {
-    resize: none;
-  }
-</style>

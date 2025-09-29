@@ -141,3 +141,4 @@ vite.config.ts.timestamp-*
 __pycache__/
 database.db
 build/
+uploads/

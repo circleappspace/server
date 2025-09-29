@@ -88,6 +88,15 @@ def create_database():
         );
     ''')
 
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS medias (
+            id INT PRIMARY KEY AUTO_INCREMENT,
+            bubble_id INT,
+            url VARCHAR(255) NOT NULL,
+            FOREIGN KEY(bubble_id) REFERENCES bubbles(id)
+        );
+    ''')
+
     conn.commit()
     conn.close()
 

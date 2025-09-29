@@ -1,8 +1,13 @@
 import express from 'express';
 import crypto from 'crypto';
 import argon2 from 'argon2';
+import multer from 'multer';
+import sharp from 'sharp';
+import fs from 'fs/promises';
 
 import db from '../db.js';
+
+const upload = multer({ dest: 'uploads/' });
 
 const CIRCLE_JSON_FIELDS = `
   JSON_OBJECT(
@@ -24,7 +29,12 @@ const BUBBLE_JSON_FIELDS = `
     'circle', ${CIRCLE_JSON_FIELDS},
     'anchor', b.anchor,
     'anchoreds_count', (SELECT COUNT(*) FROM bubbles b2 WHERE b2.anchor = b.id),
-    'pops_count', (SELECT COUNT(*) FROM pops p WHERE p.popped_id = b.id)
+    'pops_count', (SELECT COUNT(*) FROM pops p WHERE p.popped_id = b.id),
+    'media', (
+      SELECT CONCAT('[', GROUP_CONCAT(JSON_QUOTE(m.url)), ']')
+      FROM medias m
+      WHERE m.bubble_id = b.id
+    )
   )
 `;
 
@@ -246,7 +256,11 @@ router.get("/circles/username/:username/bubbles", (req, res) => {
     LIMIT 50
   `, [username]).then(data => {
     const [rows, fields] = data;
-    const bubbles = rows.map(row => JSON.parse(row.bubble));
+    const bubbles = rows.map(row => {
+      const bubble = JSON.parse(row.bubble);
+      bubble.media = bubble.media ? JSON.parse(bubble.media) : [];
+      return bubble;
+    });
     res.json(bubbles);
   }).catch(err => {
     res.status(500).json({ error: err.message });
@@ -275,7 +289,11 @@ router.get("/circles/:id/bubbles", (req, res) => {
   db.query(`SELECT ${BUBBLE_JSON_FIELDS} AS bubble FROM bubbles b JOIN circles c ON b.circle_id = c.id WHERE b.circle_id = ? ORDER BY b.id DESC LIMIT 50`, [id])
     .then(data => {
       const [rows, fields] = data;
-      const bubbles = rows.map(row => JSON.parse(row.bubble));
+      const bubbles = rows.map(row => {
+        const bubble = JSON.parse(row.bubble);
+        bubble.media = bubble.media ? JSON.parse(bubble.media) : [];
+        return bubble;
+      });
       res.json(bubbles);
     }).catch(err => {
       res.status(500).json({ error: err.message });
@@ -372,9 +390,22 @@ router.delete("/circles/:id/joinedbys", authenticateToken, (req, res) => {
     });
 });
 
-router.post("/bubbles", authenticateToken, (req, res) => {
-  const { content, anchor } = req.body;
+router.post("/bubbles", authenticateToken, async (req, res) => {
+  const { content, anchor, media } = req.body;
   const circle_id = req.circle_id;
+
+  const bubbleId = await db.query(`
+    SELECT AUTO_INCREMENT
+    FROM information_schema.TABLES
+    WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'bubbles'
+  `).then(data => {
+    const [rows, fields] = data;
+    return rows[0].AUTO_INCREMENT;
+  }).catch(err => {
+    res.status(500).json({ error: err.message });
+    return null;
+  });
+
   db.query("INSERT INTO bubbles (circle_id, content, anchor) VALUES (?, ?, ?)", [circle_id, content, anchor])
     .then(() => {
       if (anchor) {
@@ -402,6 +433,14 @@ router.post("/bubbles", authenticateToken, (req, res) => {
           });
       }
 
+      if (media) {
+        const mediaInserts = media.map((m) => [bubbleId, m]);
+        db.query("INSERT INTO medias (bubble_id, url) VALUES ?", [mediaInserts])
+          .catch(err => {
+            console.error("Failed to insert media:", err);
+          });
+      }
+
       res.status(201).json({ message: "OK" });
     })
     .catch(err => {
@@ -419,7 +458,11 @@ router.get("/bubbles", (req, res) => {
   `;
   db.query(query).then(data => {
     const [rows, fields] = data;
-    const bubbles = rows.map(row => JSON.parse(row.bubble));
+    const bubbles = rows.map(row => {
+      const bubble = JSON.parse(row.bubble);
+      bubble.media = bubble.media ? JSON.parse(bubble.media) : [];
+      return bubble;
+    });
     res.json(bubbles);
   }).catch(err => {
     res.status(500).json({ error: err.message });
@@ -441,6 +484,7 @@ router.get("/bubbles/:id", (req, res) => {
       return;
     }
     const bubble = JSON.parse(row.bubble);
+    bubble.media = bubble.media ? JSON.parse(bubble.media) : [];
     res.json(bubble);
   }).catch(err => {
     res.status(500).json({ error: err.message });
@@ -473,7 +517,11 @@ router.get("/bubbles/:id/anchoreds", (req, res) => {
     LIMIT 50
   `, [id]).then(data => {
     const [rows, fields] = data;
-    const bubbles = rows.map(row => JSON.parse(row.bubble));
+    const bubbles = rows.map(row => {
+      const bubble = JSON.parse(row.bubble);
+      bubble.media = bubble.media ? JSON.parse(bubble.media) : [];
+      return bubble;
+    });
     res.json(bubbles);
   }).catch(err => {
     res.status(500).json({ error: err.message });
@@ -562,7 +610,11 @@ router.get("/feed", authenticateToken, (req, res) => {
     LIMIT 50
   `, [circle_id]).then(data => {
     const [rows, fields] = data;
-    const bubbles = rows.map(row => JSON.parse(row.bubble));
+    const bubbles = rows.map(row => {
+      const bubble = JSON.parse(row.bubble);
+      bubble.media = bubble.media ? JSON.parse(bubble.media) : [];
+      return bubble;
+    });
     res.json(bubbles);
   }).catch(err => {
     res.status(500).json({ error: err.message });
@@ -595,6 +647,31 @@ router.put("/notifications/:id/read", authenticateToken, (req, res) => {
     }).catch(err => {
       res.status(500).json({ error: err.message });
     });
+});
+
+router.post("/upload/media", authenticateToken, upload.single('file'), async (req, res) => {
+  if (!req.file) {
+    res.status(400).json({ error: "No file uploaded" });
+    return;
+  }
+
+  const mimeType = req.file.mimetype;
+  if (!['image/jpeg', 'image/png', 'image/gif'].includes(mimeType)) {
+    res.status(400).json({ error: "Unsupported file type" });
+    return;
+  }
+  try {
+    await fs.mkdir('uploads', { recursive: true });
+
+    const filename = `uploads/${crypto.randomBytes(16).toString("hex")}.jpg`;
+    const url = `/${filename}`;
+    await sharp(req.file.path).jpeg({ quality: 80 }).toFile(filename);
+    await fs.unlink(req.file.path);
+
+    res.status(201).json({ url });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 export default router;

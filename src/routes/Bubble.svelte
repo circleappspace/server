@@ -66,20 +66,22 @@
 
 <div class="bubble">
   <div class="self">
-    <div class="header">
-      {#if bubble.anchor}
-      <a href="/b/{bubble.anchor}" style="text-decoration: none; color: inherit;" data-sveltekit-reload>
-        <i class="bi bi-paperclip"></i> b/{bubble.anchor}
-      </a>
-      {/if}
-    </div>
+    {#if bubble.anchor}
+      <div class="header">
+        <a href="/b/{bubble.anchor}" style="text-decoration: none; color: inherit;" data-sveltekit-reload>
+          <i class="bi bi-paperclip"></i> b/{bubble.anchor}
+        </a>
+      </div>
+    {/if}
     <div class="circle">
       <span class="name">{bubble.circle.name}</span>
       <span class="username">
         <a href="/c/{bubble.circle.username}" data-sveltekit-reload>c/{bubble.circle.username}</a> ·
       </span>
       <span class="timestamp">
-        {formatTimestamp(bubble.timestamp)}
+        <a href="/b/{bubble.id}" style="text-decoration: none; color: inherit;" data-sveltekit-reload>
+          {formatTimestamp(bubble.timestamp)}
+        </a>
       </span>
     </div>
     <div class="content">
@@ -89,6 +91,13 @@
         {/each}
       </a>
     </div>
+    {#if bubble.media.length > 0}
+      <div class="media">
+        {#each bubble.media as media}
+        <img src="{media}" alt="Media" >
+        {/each}
+      </div>
+    {/if}
     <div class="actions">
       {#if mine}
       <a href="/b/{bubble.id}/delete">
@@ -138,13 +147,13 @@
     font-size: 0.8em;
   }
   .content {
-    margin-bottom: 10px;
     white-space: pre-wrap;
   }
   .actions {
     display: flex;
     gap: 15px;
     font-size: 0.9em;
+    margin-top: 10px;
   }
   .actions a, .actions button {
     text-decoration: none;
@@ -157,5 +166,24 @@
   }
   .actions i {
     margin-right: 5px;
+  }
+  .media img {
+    margin-top: 10px;
+    max-width: 100%;
+    border-radius: 5px;
+    object-fit: contain;
+    max-height: 200px;
+    object-position: center;
+    overflow: hidden;
+  }
+  .media {
+    height: 200px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1px;
+    flex-direction: row;
+    margin-top: 10px;
   }
 </style>
