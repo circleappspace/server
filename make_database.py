@@ -7,6 +7,7 @@ def create_database():
     dotenv.load_dotenv()
 
     env = os.environ
+    db_name = env.get('DB_NAME', 'circle')
     conn = pymysql.connect(
         host=env.get('DB_HOST', 'localhost'),
         user=env.get('DB_USER', 'root'),
@@ -16,10 +17,10 @@ def create_database():
     )
     cursor = conn.cursor()
 
-    cursor.execute('DROP DATABASE IF EXISTS circle;')
+    cursor.execute(f'DROP DATABASE IF EXISTS {db_name};')
 
-    cursor.execute('CREATE DATABASE IF NOT EXISTS circle;')
-    cursor.execute('USE circle;')
+    cursor.execute(f'CREATE DATABASE IF NOT EXISTS {db_name};')
+    cursor.execute(f'USE {db_name};')
 
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS circles (
@@ -76,10 +77,21 @@ def create_database():
         );
     ''')
 
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS notifications (
+            id INT PRIMARY KEY AUTO_INCREMENT,
+            circle_id INT,
+            content VARCHAR(512) NOT NULL,
+            is_read BOOLEAN DEFAULT FALSE,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(circle_id) REFERENCES circles(id)
+        );
+    ''')
+
     conn.commit()
     conn.close()
 
 
 if __name__ == "__main__":
     create_database()
-    print("Database and tables created, sample data inserted.")
+

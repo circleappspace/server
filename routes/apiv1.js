@@ -30,6 +30,16 @@ const BUBBLE_JSON_FIELDS = `
 
 const USERNAME_REGEX = /^[a-zA-Z0-9_]{1,50}$/;
 
+const NOTIFICATION_JSON_FIELDS = `
+  JSON_OBJECT(
+    'id', n.id,
+    'circle_id', n.circle_id,
+    'content', n.content,
+    'timestamp', n.timestamp,
+    'is_read', n.is_read
+  )
+`;
+
 async function hashPassword(plain) {
   return await argon2.hash(plain, {
     type: argon2.argon2id,
@@ -301,6 +311,17 @@ router.post("/circles/:id/joinedbys", authenticateToken, (req, res) => {
   const joiner_id = req.circle_id;
   db.query("INSERT INTO joins (joiner_id, joinee_id) VALUES (?, ?)", [joiner_id, id])
     .then(() => {
+      db.query(`
+        INSERT INTO notifications (circle_id, content)
+        VALUES (?, ?)
+      `, [id, JSON.stringify({
+        type: 'join',
+        circle_id: joiner_id
+      })])
+      .catch(err => {
+        console.error("Failed to create notification:", err);
+      });
+
       res.status(201).json({ message: "OK" });
     }).catch(err => {
       if (err.code === 'ER_DUP_ENTRY') {
@@ -340,6 +361,20 @@ router.post("/bubbles", authenticateToken, (req, res) => {
   const circle_id = req.circle_id;
   db.query("INSERT INTO bubbles (circle_id, content, anchor) VALUES (?, ?, ?)", [circle_id, content, anchor])
     .then(() => {
+      if (anchor) {
+        db.query(`
+          INSERT INTO notifications (circle_id, content)
+          VALUES ((SELECT circle_id FROM bubbles WHERE id = ?), ?)
+        `, [anchor, JSON.stringify({
+          type: 'bubblet',
+          circle_id: circle_id,
+          bubble_id: anchor
+        })])
+        .catch(err => {
+          console.error("Failed to create notification:", err);
+        });
+      }
+
       res.status(201).json({ message: "OK" });
     })
     .catch(err => {
@@ -424,6 +459,19 @@ router.post("/bubbles/:id/pops", authenticateToken, (req, res) => {
   const circle_id = req.circle_id;
   db.query("INSERT INTO pops (popper_id, popped_id, emoji) VALUES (?, ?, ?)", [circle_id, id, emoji])
     .then(() => {
+      db.query(`
+        INSERT INTO notifications (circle_id, content)
+        VALUES ((SELECT circle_id FROM bubbles WHERE id = ?), ?)
+      `, [id, JSON.stringify({
+        type: 'pop',
+        circle_id: circle_id,
+        bubble_id: id,
+        emoji
+      })])
+      .catch(err => {
+        console.error("Failed to create notification:", err);
+      });
+
       res.status(201).json({ message: "OK" });
     }).catch(err => {
       if (err.code === 'ER_DUP_ENTRY') {
@@ -488,6 +536,34 @@ router.get("/feed", authenticateToken, (req, res) => {
   }).catch(err => {
     res.status(500).json({ error: err.message });
   });
+});
+
+router.get("/notifications", authenticateToken, (req, res) => {
+  const circle_id = req.circle_id;
+  db.query(`
+    SELECT ${NOTIFICATION_JSON_FIELDS} AS notification
+    FROM notifications n
+    WHERE n.circle_id = ?
+    ORDER BY n.id DESC
+    LIMIT 50
+  `, [circle_id]).then(data => {
+    const [rows, fields] = data;
+    const notifications = rows.map(row => JSON.parse(row.notification));
+    res.json(notifications);
+  }).catch(err => {
+    res.status(500).json({ error: err.message });
+  });
+});
+
+router.put("/notifications/:id/read", authenticateToken, (req, res) => {
+  const { id } = req.params;
+  const circle_id = req.circle_id;
+  db.query("UPDATE notifications SET is_read = TRUE WHERE id = ? AND circle_id = ?", [id, circle_id])
+    .then(() => {
+      res.json({ message: "OK" });
+    }).catch(err => {
+      res.status(500).json({ error: err.message });
+    });
 });
 
 export default router;
