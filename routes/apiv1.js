@@ -378,17 +378,28 @@ router.post("/bubbles", authenticateToken, (req, res) => {
   db.query("INSERT INTO bubbles (circle_id, content, anchor) VALUES (?, ?, ?)", [circle_id, content, anchor])
     .then(() => {
       if (anchor) {
-        db.query(`
-          INSERT INTO notifications (circle_id, content)
-          VALUES ((SELECT circle_id FROM bubbles WHERE id = ?), ?)
-        `, [anchor, JSON.stringify({
-          type: 'bubblet',
-          circle_id: circle_id,
-          bubble_id: anchor
-        })])
-        .catch(err => {
-          console.error("Failed to create notification:", err);
-        });
+        let bubble_id;
+        db.query("SELECT LAST_INSERT_ID() AS id")
+          .then(data => {
+            const [rows, fields] = data;
+            const row = rows[0];
+            bubble_id = row.id;
+            return db.query(`
+              INSERT INTO notifications (circle_id, content)
+              VALUES (
+                (SELECT circle_id FROM bubbles WHERE id = ?),
+                JSON_OBJECT(
+                  'type', 'bubblet',
+                  'circle_username', (SELECT username FROM circles WHERE id = ?),
+                  'bubble_id', ?,
+                  'bubblet_id', ?
+                )
+              )
+            `, [anchor, circle_id, anchor, bubble_id]);
+          })
+          .catch(err => {
+            console.error("Failed to create notification:", err);
+          });
       }
 
       res.status(201).json({ message: "OK" });
