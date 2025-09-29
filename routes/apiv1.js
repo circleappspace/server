@@ -311,13 +311,29 @@ router.post("/circles/:id/joinedbys", authenticateToken, (req, res) => {
   const joiner_id = req.circle_id;
   db.query("INSERT INTO joins (joiner_id, joinee_id) VALUES (?, ?)", [joiner_id, id])
     .then(() => {
+      /*
       db.query(`
         INSERT INTO notifications (circle_id, content)
         VALUES (?, ?)
       `, [id, JSON.stringify({
         type: 'join',
-        circle_id: joiner_id
+        circle_username: joiner_username
       })])
+      .catch(err => {
+        console.error("Failed to create notification:", err);
+      });
+      */
+      db.query(`
+        INSERT INTO notifications (circle_id, content)
+        VALUES (
+          ?,
+          JSON_OBJECT(
+            'type', 'join',
+            'circle_id', ?,
+            'circle_username', (SELECT username FROM circles WHERE id = ?)
+          )
+        )
+      `, [id, joiner_id, joiner_id])
       .catch(err => {
         console.error("Failed to create notification:", err);
       });

@@ -26,21 +26,21 @@
           <i class="bi bi-person-plus"></i>
         </span>
         <span class="message">
-          가입했습니다.
+          c/{notification.circle_username}님이 내 서클에 가입했습니다.
         </span>
       {:else if notification.type === 'pop'}
         <span class="icon">
           <i class="bi bi-bell"></i>
         </span>
         <span class="message">
-          버블이 팝되었습니다.
+          내 버블 b/{notification.bubble_id}이(가) {notification.emoji}(으)로 팝되었습니다.
         </span>
       {:else if notification.type === 'bubblet'}
         <span class="icon">
           <i class="bi bi-chat-dots"></i>
         </span>
         <span class="message">
-          버블렛이 도착했습니다.
+          내 버블 b/{notification.bubble_id}에 새로운 버블렛이 추가되었습니다.
         </span>
       {:else}
         <span class="icon">
