@@ -10,9 +10,9 @@
 <div class="navigation">
   <div><a href="/" data-sveltekit-reload><i class="bi bi-house"></i> 홈</a></div>
   {#if token}
-  <div><a href="/blow"><i class="bi bi-wind"></i> 불기</a></div>
   <div><a href="/notifications"><i class="bi bi-bell"></i> 알림</a></div>
   <div><a href="/c/{username}" data-sveltekit-reload><i class="bi bi-person-circle"></i> 서클</a></div>
+  <div><a href="/blow"><i class="bi bi-wind"></i> 불기</a></div>
   <div><a href="/settings"><i class="bi bi-gear"></i> 설정</a></div>
   <div><a href="/logout"><i class="bi bi-box-arrow-right"></i> 로그아웃</a></div>
   {:else}
