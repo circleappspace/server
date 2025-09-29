@@ -53,18 +53,15 @@
           님이 내 서클에 가입했습니다.
         {:else if notification.type === 'pop'}
           내 버블
-          <a href="b/{notification.bubble_id}">b/{notification.bubble_id}</a>
-          {josa.pick(notification.bubble_id, "이/가")}
+          <a href="b/{notification.bubble_id}">b/{notification.bubble_id}</a>{josa.pick(notification.bubble_id, "가/이")}
           <a href="c/{notification.circle_username}">c/{notification.circle_username}</a>
           님에 의해
-          {notification.emoji}
-          {josa.pick(notification.emoji, "로/으로")} 팝되었습니다.
+          {notification.emoji}{josa.pick(notification.emoji, "로/으로")} 팝되었습니다.
         {:else if notification.type === 'bubblet'}
           내 버블
-          <a href="b/{notification.bubble_id}">b/{notification.bubble_id}</a>
-          에
-          <a href="b/{notification.bubblet_id}">새로운 버블렛</a>
-          이 추가되었습니다.
+          <a href="b/{notification.bubble_id}">b/{notification.bubble_id}</a>에
+          <a href="b/{notification.bubblet_id}">새로운 버블렛</a>이
+          추가되었습니다.
         {:else}
           알림이 도착했습니다.
         {/if}
