@@ -488,13 +488,17 @@ router.post("/bubbles/:id/pops", authenticateToken, (req, res) => {
     .then(() => {
       db.query(`
         INSERT INTO notifications (circle_id, content)
-        VALUES ((SELECT circle_id FROM bubbles WHERE id = ?), ?)
-      `, [id, JSON.stringify({
-        type: 'pop',
-        circle_id: circle_id,
-        bubble_id: id,
-        emoji
-      })])
+        VALUES (
+          (SELECT circle_id FROM bubbles WHERE id = ?),
+          JSON_OBJECT(
+            'type', 'pop',
+            'circle_id', ?,
+            'circle_username', (SELECT username FROM circles WHERE id = ?),
+            'bubble_id', ?,
+            'emoji', ?
+          )
+        )
+      `, [id, circle_id, circle_id, id, emoji])
       .catch(err => {
         console.error("Failed to create notification:", err);
       });

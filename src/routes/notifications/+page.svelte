@@ -1,11 +1,11 @@
 <script>
-  import { onMount } from 'svelte';
+  import { onMount, tick } from 'svelte';
   import "bootstrap-icons/font/bootstrap-icons.css";
 
   export let data;
   let { notifications } = data;
 
-  onMount(() => {
+  onMount(async () => {
     notifications = notifications.map(
       (n, i) => ({
         ...JSON.parse(n.content),
@@ -13,6 +13,9 @@
         id: i
       }
     )).reverse();
+
+    await tick();
+    window.scrollTo(0, document.body.scrollHeight);
   });
 </script>
 
@@ -20,49 +23,46 @@
   <div>알림이 없습니디.</div>
 {:else}
   {#each notifications as notification (notification.id)}
-    <div class="notification">
+  <div class="notification">
+    <div class="icon">
       {#if notification.type === 'join'}
-        <span class="icon">
-          <i class="bi bi-person-plus"></i>
-        </span>
-        <span class="message">
-          <a href="c/{notification.circle_username}">c/{notification.circle_username}</a>
-         님이 내 서클에 가입했습니다.
-        </span>
+        <i class="bi bi-person-plus"></i>
       {:else if notification.type === 'pop'}
-        <span class="icon">
-          <i class="bi bi-bell"></i>
-        </span>
-        <span class="message">
+        <i class="bi bi-bell"></i>
+      {:else if notification.type === 'bubblet'}
+        <i class="bi bi-chat-dots"></i>
+      {:else}
+        <i class="bi bi-info-circle"></i>
+      {/if}
+    </div>
+    <div class="content">
+      <div class="message">
+        {#if notification.type === 'join'}
+          <a href="c/{notification.circle_username}">c/{notification.circle_username}</a>
+          님이 내 서클에 가입했습니다.
+        {:else if notification.type === 'pop'}
           내 버블
           <a href="b/{notification.bubble_id}">b/{notification.bubble_id}</a>
           이(가)
+          <a href="c/{notification.circle_username}">c/{notification.circle_username}</a>
+          님에 의해
           {notification.emoji}
           (으)로 팝되었습니다.
-        </span>
-      {:else if notification.type === 'bubblet'}
-        <span class="icon">
-          <i class="bi bi-chat-dots"></i>
-        </span>
-        <span class="message">
+        {:else if notification.type === 'bubblet'}
           내 버블
           <a href="b/{notification.bubble_id}">b/{notification.bubble_id}</a>
           에
           <a href="b/{notification.bubblet_id}">새로운 버블렛</a>
           이 추가되었습니다.
-        </span>
-      {:else}
-        <span class="icon">
-          <i class="bi bi-info-circle"></i>
-        </span>
-        <span class="message">
+        {:else}
           알림이 도착했습니다.
-        </span>
-      {/if}
+        {/if}
+      </div>
       <div class="timestamp">
         {new Date(notification.timestamp).toLocaleString()}
       </div>
     </div>
+  </div>
   {/each}
 {/if}
 
@@ -73,15 +73,21 @@
     padding: 10px;
   }
   .icon {
+    font-size: 24px;
     margin-right: 10px;
-    font-size: 1.5em;
+  }
+  .content {
+    flex: 1;
   }
   .message {
-    font-size: 1em;
+    font-size: 14px;
+    margin-bottom: 5px;
   }
   .timestamp {
-    margin-left: auto;
-    font-size: 0.8em;
-    color: gray;
+    font-size: 12px;
+    color: #888;
+  }
+  a {
+    text-decoration: none;
   }
 </style>
