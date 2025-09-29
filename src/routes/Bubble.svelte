@@ -107,14 +107,14 @@
         {bubble.pops_count}
       </button>
     </div>
-    <slot></slot>
   </div>
+  <slot></slot>
 </div>
 
 <style>
   .bubble {
-    padding: 10px;
     margin: 5px 0;
+    padding: 0 10px;
     border-left: 4px solid var(--primary-color);
   }
   .self {
