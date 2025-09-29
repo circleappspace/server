@@ -28,7 +28,7 @@
       {#if notification.type === 'join'}
         <i class="bi bi-person-plus"></i>
       {:else if notification.type === 'pop'}
-        <i class="bi bi-bell"></i>
+        <i class="bi bi-heart"></i>
       {:else if notification.type === 'bubblet'}
         <i class="bi bi-chat-dots"></i>
       {:else}
