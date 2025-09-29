@@ -1,6 +1,11 @@
 <script>
   import { onMount, tick } from 'svelte';
   import "bootstrap-icons/font/bootstrap-icons.css";
+  import dayjs from 'dayjs';
+  import relativeTime from 'dayjs/plugin/relativeTime';
+  import 'dayjs/locale/ko';
+
+  dayjs.locale('ko');
 
   export let data;
   let { notifications } = data;
@@ -17,6 +22,11 @@
     await tick();
     window.scrollTo(0, document.body.scrollHeight);
   });
+
+  function formatTimestamp(timestamp) {
+    dayjs.extend(relativeTime);
+    return dayjs(timestamp).fromNow();
+  }
 </script>
 
 {#if notifications.length === 0}
@@ -59,7 +69,7 @@
         {/if}
       </div>
       <div class="timestamp">
-        {new Date(notification.timestamp).toLocaleString()}
+        {formatTimestamp(notification.timestamp)}
       </div>
     </div>
   </div>
