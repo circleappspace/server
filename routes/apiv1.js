@@ -245,26 +245,17 @@ router.get("/circles/username/:username", (req, res) => {
     });
 });
 
-router.get("/circles/username/:username/bubbles", (req, res) => {
-  const { username } = req.params;
-  db.query(`
-    SELECT ${BUBBLE_JSON_FIELDS} AS bubble
-    FROM bubbles b
-    JOIN circles c ON b.circle_id = c.id
-    WHERE c.username = ?
-    ORDER BY b.id DESC
-    LIMIT 50
-  `, [username]).then(data => {
-    const [rows, fields] = data;
-    const bubbles = rows.map(row => {
-      const bubble = JSON.parse(row.bubble);
-      bubble.media = bubble.media ? JSON.parse(bubble.media) : [];
-      return bubble;
+router.get("/circles/search/:q", (req, res) => {
+  const { q } = req.params;
+  const likeQ = `%${q}%`;
+  db.query(`SELECT ${CIRCLE_JSON_FIELDS} AS circle FROM circles c WHERE c.username LIKE ? OR c.name LIKE ? ORDER BY c.id DESC LIMIT 50`, [likeQ, likeQ])
+    .then(data => {
+      const [rows, fields] = data;
+      const circles = rows.map(row => JSON.parse(row.circle));
+      res.json(circles);
+    }).catch(err => {
+      res.status(500).json({ error: err.message });
     });
-    res.json(bubbles);
-  }).catch(err => {
-    res.status(500).json({ error: err.message });
-  });
 });
 
 router.get("/circles/:id", (req, res) => {
