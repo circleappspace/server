@@ -9,6 +9,7 @@
 
   let username = $page.params.username;
   let circle = data.circle;
+  let bubbles = data.bubbles;
 
   const mine = username === Cookies.get("username");
   const token = Cookies.get("token");
@@ -28,7 +29,7 @@
   });
 </script>
 
-<Timeline {username} />
+<Timeline {bubbles} />
 <div class="circle-info">
   <div class="name">{circle.name}</div>
   <div class="username">c/{circle.username}</div>

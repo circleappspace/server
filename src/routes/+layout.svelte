@@ -1,10 +1,14 @@
 <script>
   import Navigation from './Navigation.svelte';
+
+  export let data;
+
+  const { username } = data;
 </script>
 
 <div class="container">
   <slot />
-  <Navigation />
+  <Navigation {username} />
   <div class="header">
     <img src="/circle-icon-mint.PNG" alt="Logo" width="24" height="24" />
   </div>
