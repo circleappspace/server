@@ -45,7 +45,7 @@ const NOTIFICATION_JSON_FIELDS = `
     'id', n.id,
     'circle_id', n.circle_id,
     'content', n.content,
-    'timestamp', n.timestamp,
+    'created_at', n.created_at,
     'is_read', n.is_read
   )
 `;

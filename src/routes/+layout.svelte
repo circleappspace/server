@@ -6,6 +6,11 @@
   const { username } = data;
 </script>
 
+<svelte:head>
+  <title>Circle</title>
+  <link rel="icon" type="image/png" href="/circle-icon-mint.PNG" />
+</svelte:head>
+
 <div class="container">
   <slot />
   <Navigation {username} />
