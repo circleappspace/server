@@ -5,12 +5,12 @@ export async function load(data) {
   const username = Cookies.get('username');
   const seeAllBubbles = Cookies.get('seeAllBubbles');
 
+  const token = Cookies.get('token');
+
   let url = "/api/v1/bubbles";
-  if (username && seeAllBubbles !== 'true') {
+  if (token && username && seeAllBubbles !== 'true') {
     url = "/api/v1/feed"
   }
-
-  const token = Cookies.get('token');
 
   const bubbles = await fetch(url, {
     headers: {
