@@ -1,11 +1,8 @@
 <script>
   import { onMount, tick } from 'svelte';
   import Bubble from './Bubble.svelte';
-  import Cookies from 'js-cookie';
 
   export let bubbles = [];
-
-  bubbles.reverse();
 
   onMount(async () => {
     await tick();
