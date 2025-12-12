@@ -163,7 +163,18 @@ router.post("/auth/register", async (req, res) => {
     .then(() => {
       db.query("INSERT INTO joins (joiner_id, joinee_id) SELECT id, id FROM circles WHERE username = ?", [username])
         .then(() => {
-          res.status(201).json({ message: "OK" });
+          db.query(`
+            INSERT INTO joins (joiner_id, joinee_id)
+            SELECT c.id, core.id
+            FROM circles c
+            JOIN circles core ON core.username = 'circle'
+            WHERE c.username = ?
+          `, [username])
+            .then(() => {
+              res.status(201).json({ message: "OK" });
+            }).catch(err => {
+              res.status(500).json({ error: err.message });
+            });
         }).catch(err => {
           res.status(500).json({ error: err.message });
         });
@@ -424,7 +435,7 @@ router.post("/bubbles", authenticateToken, async (req, res) => {
           });
       }
 
-      if (media) {
+      if (media.length > 0) {
         const mediaInserts = media.map((m) => [bubbleId, m]);
         db.query("INSERT INTO medias (bubble_id, url) VALUES ?", [mediaInserts])
           .catch(err => {
