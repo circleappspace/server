@@ -17,7 +17,7 @@
   "scripts": {
     "build": "vite build",
     "start": "node index.js",
-    "dev": "concurrently \"vite dev --host\" \"node index.js\""
+    "dev": "DB_NAME=circle_test concurrently \"vite dev --host\" \"node index.js\""
   },
   "dependencies": {
     "argon2": "^0.44.0",
