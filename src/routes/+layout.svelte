@@ -16,7 +16,7 @@
   <Navigation {username} />
   <div class="header">
     <div><img src="/circle-icon-mint.PNG" alt="Logo" width="24" height="24" /></div>
-    <div><a href="https://github.com/circleappspace/server"><img src="github-mark.svg" alt="GitHub" width="24" height="24" /></a></div>
+    <div><a href="https://github.com/circleappspace/server"><img src="/github-mark.svg" alt="GitHub" width="24" height="24" /></a></div>
   </div>
 </div>
 
