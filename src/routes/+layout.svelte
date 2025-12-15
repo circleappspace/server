@@ -9,6 +9,7 @@
 <svelte:head>
   <title>Circle</title>
   <link rel="icon" type="image/png" href="/circle-icon-mint.PNG" />
+  <meta name="theme-color" content="#0bb7ba" />
 </svelte:head>
 
 <div class="container">
