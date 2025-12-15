@@ -78,6 +78,11 @@
     display: flex;
     align-items: center;
     padding: 10px;
+    transition: background-color 0.2s;
+    border-radius: 8px;
+  }
+  .notification:hover {
+    background-color: var(--hover-color);
   }
   .icon {
     font-size: 24px;
