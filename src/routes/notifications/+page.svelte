@@ -4,7 +4,6 @@
   import dayjs from 'dayjs';
   import relativeTime from 'dayjs/plugin/relativeTime';
   import 'dayjs/locale/ko';
-  import { josa } from "es-hangul";
 
   dayjs.locale('ko');
 
@@ -15,10 +14,13 @@
     notifications = notifications.map(
       (n, i) => ({
         ...JSON.parse(n.content),
-        timestamp: n.timestamp,
+        timestamp: n.created_at,
+        circle: n.circle,
         id: i
       }
     )).reverse();
+
+    console.log(notifications);
 
     await tick();
     window.scrollTo(0, document.body.scrollHeight);
@@ -31,7 +33,7 @@
 </script>
 
 {#if notifications.length === 0}
-  <div>알림이 없습니디.</div>
+  <div>알림이 없습니다.</div>
 {:else}
   {#each notifications as notification (notification.id)}
   <div class="notification">
@@ -49,18 +51,15 @@
     <div class="content">
       <div class="message">
         {#if notification.type === 'join'}
-          <a href="c/{notification.circle_username}">c/{notification.circle_username}</a>
-          님이 내 서클에 가입했습니다.
+          <a href="c/{notification.circle_username}" class="circle-name">{notification.circle.name}</a>님이
+          내 서클에 가입했습니다.
         {:else if notification.type === 'pop'}
-          내 버블
-          <a href="b/{notification.bubble_id}">b/{notification.bubble_id}</a>{josa.pick(notification.bubble_id, "가/이")}
-          <a href="c/{notification.circle_username}">c/{notification.circle_username}</a>
-          님에 의해
-          {notification.emoji}{josa.pick(notification.emoji, "로/으로")} 팝되었습니다.
+          <a href="c/{notification.circle_username}" class="circle-name">{notification.circle.name}</a>님이
+          <a href="b/{notification.bubble_id}" class="my-bubble">내 버블</a>을
+          팝했습니다.
         {:else if notification.type === 'bubblet'}
-          내 버블
-          <a href="b/{notification.bubble_id}">b/{notification.bubble_id}</a>에
-          <a href="b/{notification.bubblet_id}">새로운 버블렛</a>이
+          <a href="b/{notification.bubble_id}" class="my-bubble">내 버블</a>에
+          <a href="b/{notification.bubblet_id}" class="new-bubblet">새로운 버블렛</a>이
           추가되었습니다.
         {:else}
           알림이 도착했습니다.
@@ -97,5 +96,17 @@
   }
   a {
     text-decoration: none;
+  }
+
+  .circle-name {
+    font-weight: bold;
+  }
+
+  .my-bubble {
+    font-weight: bold;
+  }
+
+  .new-bubblet {
+    font-weight: bold;
   }
 </style>
