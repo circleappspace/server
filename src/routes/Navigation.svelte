@@ -22,7 +22,6 @@
 <style>
   .navigation {
     display: flex;
-    gap: 1rem;
     padding: 0.5rem 1rem;
     justify-content: center;
     flex-wrap: wrap;
@@ -35,9 +34,12 @@
     text-decoration: none;
     color: #343a40;
     font-weight: 500;
+    padding: 8px 12px;
+    border-radius: 999px;
+    transition: 0.2s background-color;
   }
   .navigation a:hover {
-    color: #007bff;
+    background-color: var(--hover-color);
   }
 
   .bi { margin-right: 0.5rem; }
