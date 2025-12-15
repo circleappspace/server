@@ -7,11 +7,11 @@
   let media = [];
 
   let blowing = false;
+  let textarea;
 
   function handleSubmit(e) {
     e.preventDefault();
-    const formData = new FormData(e.target);
-    const content = formData.get('content');
+    const content = textarea.value.trim();
     const token = Cookies.get('token');
 
     blowing = true;
@@ -62,12 +62,19 @@
 </script>
 
 <div>
-  <form on:submit|preventDefault={handleSubmit}>
+  <form on:submit={handleSubmit}>
     <div>
       <textarea
         rows="10"
         placeholder="생각은 방울방울"
         name="content"
+        on:keydown={(e) => {
+          console.log(e);
+          if (e.key === 'Enter' && e.metaKey) {
+            handleSubmit(e);
+          }
+        }}
+        bind:this={textarea}
       ></textarea>
     </div>
     <div>
