@@ -5,10 +5,13 @@
   import relativeTime from "dayjs/plugin/relativeTime";
   import { onMount } from "svelte";
   import "dayjs/locale/ko";
+  import Bubble from "./Bubble.svelte";
 
   dayjs.locale("ko");
 
   export let bubble;
+  export let autoBubbletCount = 2;
+  export let autoBubbleDepth = 2;
 
   const paragraphs = bubble.content.split("\n").filter((p) => p.trim() !== "");
 
@@ -49,6 +52,11 @@
   }
 
   let isPopped = false;
+
+  let bubblets = [];
+
+  let anchorBubble = "";
+
   onMount(() => {
     fetch(`/api/v1/bubbles/${bubble.id}/pops`, {
       method: "GET",
@@ -77,15 +85,45 @@
         isPopped = data.length > 0;
       })
       .catch((error) => console.error("Error:", error));
+    
+    if (autoBubbletCount > 0 && autoBubbleDepth > 0) {
+      fetch(`/api/v1/bubbles/${bubble.id}/anchoreds?count=${autoBubbletCount}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${Cookies.get("token")}`,
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          bubblets = data;
+        })
+        .catch((error) => console.error("Error:", error));
+    }
+    
+    if (bubble.anchor) {
+      fetch(`/api/v1/bubbles/${bubble.anchor}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${Cookies.get("token")}`,
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          anchorBubble = data;
+        })
+        .catch((error) => console.error("Error:", error));
+    }
   });
 </script>
 
 <div class="bubble">
   <div class="self">
-    {#if bubble.anchor}
+    {#if bubble.anchor && anchorBubble}
       <div class="header">
         <a href="/b/{bubble.anchor}" style="text-decoration: none; color: inherit;" data-sveltekit-reload>
-          <i class="bi bi-paperclip"></i> b/{bubble.anchor}
+          <i class="bi bi-paperclip"></i> c/{anchorBubble.circle.username}: {anchorBubble.content.slice(0, 30)}{anchorBubble.content.length > 30 ? "..." : ""}
         </a>
       </div>
     {/if}
@@ -133,18 +171,24 @@
       </button>
     </div>
   </div>
-  <slot></slot>
+  {#if autoBubbletCount > 0 && bubblets.length > 0}
+    {#each bubblets.reverse() as bubblet}
+      <Bubble bubble={bubblet} autoBubbletCount={autoBubbletCount} autoBubbleDepth={autoBubbleDepth - 1} />
+    {/each}
+  {:else}
+    <slot></slot>
+  {/if}
 </div>
 
 <style>
   .bubble {
     margin: 5px 0;
     padding: 8px;
-    border-left: 4px solid var(--primary-color);
+    border-left: 2px solid var(--primary-color);
     border-radius: 0 5px 5px 0;
     transition: background-color 0.2s;
   }
-  .bubble:hover {
+  .bubble:hover:not(:has(.bubble *:hover)) {
     background-color: var(--hover-color);
   }
   .self {
@@ -153,7 +197,7 @@
   }
   .header {
     font-size: 0.9em;
-    color: var(--secondary-text-color);
+    color: var(--tertiary-text-color);
     margin-bottom: 5px;
   }
   .circle {
@@ -162,7 +206,7 @@
   }
   .circle .username, .circle .timestamp {
     font-weight: normal;
-    color: var(--secondary-text-color);
+    color: var(--tertiary-text-color);
   }
   .timestamp {
     font-size: 0.8em;

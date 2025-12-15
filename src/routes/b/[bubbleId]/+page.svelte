@@ -40,7 +40,7 @@
 </svelte:head>
 
 {#if bubble}
-<Bubble {bubble}>
+<Bubble {bubble} autoBubbletCount={0}>
   {#each anchoreds as anchored}
     <Bubble bubble={anchored} />
   {/each}
