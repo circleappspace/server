@@ -27,7 +27,7 @@
       body: JSON.stringify({ emoji: "❤️" }),
     })
       .then((response) => response.json())
-      .then((data) => {
+      .then(() => {
         if (isPopped) {
           popped = popped.filter((e) => e !== "❤️");
           bubble.pops_count = Number(bubble.pops_count) - 1;
@@ -123,7 +123,7 @@
       <a href="/b/{bubble.id}/attach">
         <i class="bi bi-reply"></i> {bubble.anchoreds_count}
       </a>
-      <button on:click={react} style="background: none; border: none; padding: 0; cursor: pointer;">
+      <button on:click={react}>
         {#if isPopped}
         <i class="bi bi-emoji-smile-fill"></i>
         {:else}
@@ -139,8 +139,13 @@
 <style>
   .bubble {
     margin: 5px 0;
-    padding: 0 10px;
+    padding: 8px;
     border-left: 4px solid var(--primary-color);
+    border-radius: 0 5px 5px 0;
+    transition: background-color 0.2s;
+  }
+  .bubble:hover {
+    background-color: var(--hover-color);
   }
   .self {
     display: flex;
@@ -201,5 +206,14 @@
     gap: 1px;
     flex-direction: row;
     margin-top: 10px;
+  }
+
+  button {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    color: inherit;
+    margin: 0;
   }
 </style>
