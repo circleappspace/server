@@ -1,9 +1,9 @@
 <script>
   import "bootstrap-icons/font/bootstrap-icons.css";
   import Cookies from "js-cookie";
-  import { onMount } from "svelte";
   import dayjs from "dayjs";
   import relativeTime from "dayjs/plugin/relativeTime";
+  import { onMount } from "svelte";
   import "dayjs/locale/ko";
 
   dayjs.locale("ko");
@@ -17,26 +17,9 @@
 
   let popped = [];
 
-  onMount(() => {
-    fetch(`/api/v1/bubbles/${bubble.id}/is_popped`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${Cookies.get("token")}`,
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        popped = data.popped;
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-  });
-
   function react() {
     fetch(`/api/v1/bubbles/${bubble.id}/pops`, {
-      method: (popped.indexOf("❤️") !== -1) ? "DELETE" : "POST",
+      method: isPopped ? "DELETE" : "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${Cookies.get("token")}`,
@@ -45,12 +28,14 @@
     })
       .then((response) => response.json())
       .then((data) => {
-        if (popped.indexOf("❤️") !== -1) {
+        if (isPopped) {
           popped = popped.filter((e) => e !== "❤️");
           bubble.pops_count = Number(bubble.pops_count) - 1;
+          isPopped = false;
         } else {
           popped.push("❤️");
           bubble.pops_count = Number(bubble.pops_count) + 1;
+          isPopped = true;
         }
       })
       .catch((error) => {
@@ -62,6 +47,37 @@
     dayjs.extend(relativeTime);
     return dayjs(timestamp).fromNow();
   }
+
+  let isPopped = false;
+  onMount(() => {
+    fetch(`/api/v1/bubbles/${bubble.id}/pops`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${Cookies.get("token")}`,
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        popped = data;
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  
+    fetch(`/api/v1/bubbles/${bubble.id}/pops/me`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${Cookies.get("token")}`,
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        isPopped = data.length > 0;
+      })
+      .catch((error) => console.error("Error:", error));
+  });
 </script>
 
 <div class="bubble">
@@ -108,7 +124,7 @@
         <i class="bi bi-reply"></i> {bubble.anchoreds_count}
       </a>
       <button on:click={react} style="background: none; border: none; padding: 0; cursor: pointer;">
-        {#if popped.length > 0}
+        {#if isPopped}
         <i class="bi bi-emoji-smile-fill"></i>
         {:else}
         <i class="bi bi-emoji-smile"></i>

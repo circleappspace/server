@@ -530,6 +530,19 @@ router.get("/bubbles/:id/anchoreds", (req, res) => {
   });
 });
 
+router.get("/bubbles/:id/pops/me", authenticateToken, (req, res) => {
+  const { id } = req.params;
+  const circle_id = req.circle_id;
+  db.query("SELECT emoji FROM pops WHERE popper_id = ? AND popped_id = ?", [circle_id, id])
+    .then(data => {
+      const [rows, fields] = data;
+      const emojis = rows.map(row => row.emoji);
+      res.json(emojis);
+    }).catch(err => {
+      res.status(500).json({ error: err.message });
+    });
+});
+
 router.post("/bubbles/:id/pops", authenticateToken, (req, res) => {
   const { id } = req.params;
   const { emoji } = req.body;
@@ -569,19 +582,6 @@ router.get("/bubbles/:id/pops", (req, res) => {
     .then(data => {
       const [rows, fields] = data;
       res.json(rows);
-    }).catch(err => {
-      res.status(500).json({ error: err.message });
-    });
-});
-
-router.get("/bubbles/:id/is_popped", authenticateToken, (req, res) => {
-  const { id } = req.params;
-  const circle_id = req.circle_id;
-  db.query("SELECT emoji FROM pops WHERE popper_id = ? AND popped_id = ?", [circle_id, id])
-    .then(data => {
-      const [rows, fields] = data;
-      const emojis = rows.map(row => row.emoji);
-      res.json({ popped: emojis });
     }).catch(err => {
       res.status(500).json({ error: err.message });
     });
