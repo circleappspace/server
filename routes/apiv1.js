@@ -97,7 +97,6 @@ function authenticateToken(req, res, next) {
 
 router.post("/auth/logins", async (req, res) => {
   const { username, password } = req.body;
-  const password_hash = await hashPassword(password);
   db.query("SELECT * FROM circles WHERE username = ?", [username])
     .then(data => {
       const [rows, fields] = data;
