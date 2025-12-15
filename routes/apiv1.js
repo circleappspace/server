@@ -43,7 +43,7 @@ const USERNAME_REGEX = /^[a-zA-Z0-9_]{1,50}$/;
 const NOTIFICATION_JSON_FIELDS = `
   JSON_OBJECT(
     'id', n.id,
-    'circle_id', n.circle_id,
+    'circle', (SELECT ${CIRCLE_JSON_FIELDS} FROM circles c WHERE c.id = n.circle_id),
     'content', n.content,
     'created_at', n.created_at,
     'is_read', n.is_read
@@ -331,26 +331,13 @@ router.post("/circles/:id/joinedbys", authenticateToken, (req, res) => {
   const joiner_id = req.circle_id;
   db.query("INSERT INTO joins (joiner_id, joinee_id) VALUES (?, ?)", [joiner_id, id])
     .then(() => {
-      /*
-      db.query(`
-        INSERT INTO notifications (circle_id, content)
-        VALUES (?, ?)
-      `, [id, JSON.stringify({
-        type: 'join',
-        circle_username: joiner_username
-      })])
-      .catch(err => {
-        console.error("Failed to create notification:", err);
-      });
-      */
       db.query(`
         INSERT INTO notifications (circle_id, content)
         VALUES (
           ?,
           JSON_OBJECT(
             'type', 'join',
-            'circle_id', ?,
-            'circle_username', (SELECT username FROM circles WHERE id = ?)
+            'circle_id', ?
           )
         )
       `, [id, joiner_id, joiner_id])
@@ -423,12 +410,12 @@ router.post("/bubbles", authenticateToken, async (req, res) => {
                 (SELECT circle_id FROM bubbles WHERE id = ?),
                 JSON_OBJECT(
                   'type', 'bubblet',
-                  'circle_username', (SELECT username FROM circles WHERE id = ?),
+                  'circle_id', ?,
                   'bubble_id', ?,
                   'bubblet_id', ?
                 )
               )
-            `, [anchor, circle_id, anchor, bubble_id]);
+            `, [anchor, circle_id, bubble_id, bubble_id]);
           })
           .catch(err => {
             console.error("Failed to create notification:", err);
@@ -530,6 +517,19 @@ router.get("/bubbles/:id/anchoreds", (req, res) => {
   });
 });
 
+router.get("/bubbles/:id/pops/me", authenticateToken, (req, res) => {
+  const { id } = req.params;
+  const circle_id = req.circle_id;
+  db.query("SELECT emoji FROM pops WHERE popper_id = ? AND popped_id = ?", [circle_id, id])
+    .then(data => {
+      const [rows, fields] = data;
+      const emojis = rows.map(row => row.emoji);
+      res.json(emojis);
+    }).catch(err => {
+      res.status(500).json({ error: err.message });
+    });
+});
+
 router.post("/bubbles/:id/pops", authenticateToken, (req, res) => {
   const { id } = req.params;
   const { emoji } = req.body;
@@ -543,12 +543,11 @@ router.post("/bubbles/:id/pops", authenticateToken, (req, res) => {
           JSON_OBJECT(
             'type', 'pop',
             'circle_id', ?,
-            'circle_username', (SELECT username FROM circles WHERE id = ?),
             'bubble_id', ?,
             'emoji', ?
           )
         )
-      `, [id, circle_id, circle_id, id, emoji])
+      `, [id, circle_id, id, emoji])
       .catch(err => {
         console.error("Failed to create notification:", err);
       });
@@ -569,19 +568,6 @@ router.get("/bubbles/:id/pops", (req, res) => {
     .then(data => {
       const [rows, fields] = data;
       res.json(rows);
-    }).catch(err => {
-      res.status(500).json({ error: err.message });
-    });
-});
-
-router.get("/bubbles/:id/is_popped", authenticateToken, (req, res) => {
-  const { id } = req.params;
-  const circle_id = req.circle_id;
-  db.query("SELECT emoji FROM pops WHERE popper_id = ? AND popped_id = ?", [circle_id, id])
-    .then(data => {
-      const [rows, fields] = data;
-      const emojis = rows.map(row => row.emoji);
-      res.json({ popped: emojis });
     }).catch(err => {
       res.status(500).json({ error: err.message });
     });

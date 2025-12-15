@@ -1,6 +1,4 @@
 <script>
-  import Cookies from 'js-cookie';
-  import { onMount } from 'svelte';
   import "bootstrap-icons/font/bootstrap-icons.css";
 
   export let username = null;
@@ -10,11 +8,11 @@
   <div><a href="/" data-sveltekit-reload><i class="bi bi-house"></i> 홈</a></div>
   <div><a href="/search" data-sveltekit-reload><i class="bi bi-search"></i> 검색</a></div>
   {#if username}
-  <div><a href="/notifications"><i class="bi bi-bell"></i> 알림</a></div>
+  <div><a href="/notifications" data-sveltekit-reload><i class="bi bi-bell"></i> 알림</a></div>
   <div><a href="/c/{username}" data-sveltekit-reload><i class="bi bi-person-circle"></i> 서클</a></div>
-  <div><a href="/blow"><i class="bi bi-wind"></i> 불기</a></div>
-  <div><a href="/settings"><i class="bi bi-gear"></i> 설정</a></div>
-  <div><a href="/logout"><i class="bi bi-box-arrow-right"></i> 로그아웃</a></div>
+  <div><a href="/blow" data-sveltekit-reload><i class="bi bi-wind"></i> 불기</a></div>
+  <div><a href="/settings" data-sveltekit-reload><i class="bi bi-gear"></i> 설정</a></div>
+  <div><a href="/logout" data-sveltekit-reload><i class="bi bi-box-arrow-right"></i> 로그아웃</a></div>
   {:else}
   <div><a href="/login" data-sveltekit-reload><i class="bi bi-box-arrow-in-right"></i> 로그인</a></div>
   <div><a href="/register" data-sveltekit-reload><i class="bi bi-person-plus"></i> 회원가입</a></div>
@@ -24,7 +22,6 @@
 <style>
   .navigation {
     display: flex;
-    gap: 1rem;
     padding: 0.5rem 1rem;
     justify-content: center;
     flex-wrap: wrap;
@@ -37,9 +34,12 @@
     text-decoration: none;
     color: #343a40;
     font-weight: 500;
+    padding: 8px 12px;
+    border-radius: 999px;
+    transition: 0.2s background-color;
   }
   .navigation a:hover {
-    color: #007bff;
+    background-color: var(--hover-color);
   }
 
   .bi { margin-right: 0.5rem; }

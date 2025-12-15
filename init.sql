@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS joins (
 );
 
 CREATE TABLE IF NOT EXISTS auths (
-    circle_id INT PRIMARY KEY,
+    circle_id INT,
     token VARCHAR(255) NOT NULL UNIQUE,
     agent VARCHAR(255),
     issued_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
