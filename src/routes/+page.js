@@ -1,3 +1,4 @@
+import { loadBubble } from './Bubble.js';
 import Cookies from 'js-cookie';
 
 export async function load(data) {
@@ -16,7 +17,13 @@ export async function load(data) {
     headers: {
       'Authorization': `Bearer ${token}`
     }
-  }).then(res => res.json());
+  }).then(async res => {
+    res = await res.json();
+    for (let i = 0; i < res.length; i++) {
+      res[i] = {...res[i], ...await loadBubble(fetch, res[i], token)};
+    }
+    return res;
+  })
 
   return { bubbles };
 }

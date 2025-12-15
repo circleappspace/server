@@ -69,7 +69,6 @@
         placeholder="생각은 방울방울"
         name="content"
         on:keydown={(e) => {
-          console.log(e);
           if (e.key === 'Enter' && e.metaKey) {
             handleSubmit(e);
           }

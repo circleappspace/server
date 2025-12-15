@@ -20,8 +20,6 @@
       }
     )).reverse();
 
-    console.log(notifications);
-
     await tick();
     window.scrollTo(0, document.body.scrollHeight);
   });

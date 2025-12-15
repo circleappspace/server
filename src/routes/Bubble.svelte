@@ -3,15 +3,12 @@
   import Cookies from "js-cookie";
   import dayjs from "dayjs";
   import relativeTime from "dayjs/plugin/relativeTime";
-  import { onMount } from "svelte";
   import "dayjs/locale/ko";
   import Bubble from "./Bubble.svelte";
 
   dayjs.locale("ko");
 
   export let bubble;
-  export let autoBubbletCount = 2;
-  export let autoBubbleDepth = 2;
 
   const paragraphs = bubble.content.split("\n").filter((p) => p.trim() !== "");
 
@@ -52,78 +49,14 @@
   }
 
   let isPopped = false;
-
-  let bubblets = [];
-
-  let anchorBubble = "";
-
-  onMount(() => {
-    fetch(`/api/v1/bubbles/${bubble.id}/pops`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${Cookies.get("token")}`,
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        popped = data;
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-  
-    fetch(`/api/v1/bubbles/${bubble.id}/pops/me`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${Cookies.get("token")}`,
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        isPopped = data.length > 0;
-      })
-      .catch((error) => console.error("Error:", error));
-    
-    if (autoBubbletCount > 0 && autoBubbleDepth > 0) {
-      fetch(`/api/v1/bubbles/${bubble.id}/anchoreds?count=${autoBubbletCount}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${Cookies.get("token")}`,
-        },
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          bubblets = data;
-        })
-        .catch((error) => console.error("Error:", error));
-    }
-    
-    if (bubble.anchor) {
-      fetch(`/api/v1/bubbles/${bubble.anchor}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${Cookies.get("token")}`,
-        },
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          anchorBubble = data;
-        })
-        .catch((error) => console.error("Error:", error));
-    }
-  });
 </script>
 
 <div class="bubble">
   <div class="self">
-    {#if bubble.anchor && anchorBubble}
+    {#if bubble.anchorBubble}
       <div class="header">
         <a href="/b/{bubble.anchor}" style="text-decoration: none; color: inherit;" data-sveltekit-reload>
-          <i class="bi bi-paperclip"></i> c/{anchorBubble.circle.username}: {anchorBubble.content.slice(0, 30)}{anchorBubble.content.length > 30 ? "..." : ""}
+          <i class="bi bi-paperclip"></i> c/{bubble.anchorBubble.circle.username}: {bubble.anchorBubble.content.slice(0, 30)}{bubble.anchorBubble.content.length > 30 ? "..." : ""}
         </a>
       </div>
     {/if}
@@ -171,19 +104,19 @@
       </button>
     </div>
   </div>
-  {#if autoBubbletCount > 0 && bubblets.length > 0}
-    {#each bubblets.reverse() as bubblet}
-      <Bubble bubble={bubblet} autoBubbletCount={autoBubbletCount} autoBubbleDepth={autoBubbleDepth - 1} />
-    {/each}
-  {:else}
-    <slot></slot>
-  {/if}
+  <slot>
+    {#if bubble.bubblets && bubble.bubblets.length > 0}
+      {#each bubble.bubblets.reverse() as bubblet}
+        <Bubble bubble={bubblet} autoBubbletCount={bubble.autoBubbletCount} autoBubbleDepth={bubble.autoBubbleDepth - 1} />
+      {/each}
+    {/if}
+  </slot>
 </div>
 
 <style>
   .bubble {
     margin: 5px 0;
-    padding: 8px;
+    padding: 8px 0 0 8px;
     border-left: 2px solid var(--primary-color);
     border-radius: 0 5px 5px 0;
     transition: background-color 0.2s;
@@ -218,7 +151,7 @@
     display: flex;
     gap: 15px;
     font-size: 0.9em;
-    margin-top: 10px;
+    margin: 8px 0 4px 0;
   }
   .actions a, .actions button {
     text-decoration: none;
