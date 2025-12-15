@@ -61,9 +61,13 @@
 
 <form on:submit|preventDefault={handleSubmit}>
   <div>핸들</div>
-  <input type="text" name="username" value={username}/>
+  <input type="text" name="username" value={username} pattern="[a-zA-Z0-9_]{'{'}1,50}" on:input={e => {
+    e.target.setCustomValidity('핸들은 영문자, 숫자, 밑줄(_)만 사용할 수 있으며 50자 이내여야 합니다.');
+  }} />
   <div>이름</div>
-  <input type="text" name="name" value={name}/>
+  <input type="text" name="name" value={name} pattern="[^\0]{'{'}1,100}" on:input={e => {
+    e.target.setCustomValidity('이름은 100자 이내여야 합니다.');
+  }} />
   <div>자기소개</div>
   <textarea name="bio">{bio}</textarea>
   <button type="submit">적용</button>
