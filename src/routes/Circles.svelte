@@ -18,6 +18,12 @@
 <style>
   .circle-card {
     padding: 15px;
+    border-radius: 8px;
+    transition: 0.2s background-color;
+  }
+
+  .circle-card:hover {
+    background-color: var(--hover-color);
   }
 
   .circle-link {
