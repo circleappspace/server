@@ -69,6 +69,12 @@
     e.target.setCustomValidity('이름은 100자 이내여야 합니다.');
   }} />
   <div>자기소개</div>
-  <textarea name="bio">{bio}</textarea>
+  <textarea name="bio" bind:value={bio}></textarea>
   <button type="submit">적용</button>
 </form>
+
+<style>
+  textarea {
+    resize: vertical;
+  }
+</style>

@@ -1,7 +1,8 @@
 body {
     --text-color: #000;
-    --background-color: #fff;
     --secondary-text-color: #666;
+    --tertiary-text-color: #aaa;
+    --background-color: #fff;
     --hover-color: #f7f7f9;
 
     --primary-color: #0bb7ba;

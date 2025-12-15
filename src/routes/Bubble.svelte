@@ -3,8 +3,8 @@
   import Cookies from "js-cookie";
   import dayjs from "dayjs";
   import relativeTime from "dayjs/plugin/relativeTime";
-  import { onMount } from "svelte";
   import "dayjs/locale/ko";
+  import Bubble from "./Bubble.svelte";
 
   dayjs.locale("ko");
 
@@ -49,43 +49,14 @@
   }
 
   let isPopped = false;
-  onMount(() => {
-    fetch(`/api/v1/bubbles/${bubble.id}/pops`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${Cookies.get("token")}`,
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        popped = data;
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-  
-    fetch(`/api/v1/bubbles/${bubble.id}/pops/me`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${Cookies.get("token")}`,
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        isPopped = data.length > 0;
-      })
-      .catch((error) => console.error("Error:", error));
-  });
 </script>
 
 <div class="bubble">
   <div class="self">
-    {#if bubble.anchor}
+    {#if bubble.anchorBubble}
       <div class="header">
         <a href="/b/{bubble.anchor}" style="text-decoration: none; color: inherit;" data-sveltekit-reload>
-          <i class="bi bi-paperclip"></i> b/{bubble.anchor}
+          <i class="bi bi-paperclip"></i> c/{bubble.anchorBubble.circle.username}: {bubble.anchorBubble.content.slice(0, 30)}{bubble.anchorBubble.content.length > 30 ? "..." : ""}
         </a>
       </div>
     {/if}
@@ -133,18 +104,24 @@
       </button>
     </div>
   </div>
-  <slot></slot>
+  <slot>
+    {#if bubble.bubblets && bubble.bubblets.length > 0}
+      {#each bubble.bubblets.reverse() as bubblet}
+        <Bubble bubble={bubblet} autoBubbletCount={bubble.autoBubbletCount} autoBubbleDepth={bubble.autoBubbleDepth - 1} />
+      {/each}
+    {/if}
+  </slot>
 </div>
 
 <style>
   .bubble {
     margin: 5px 0;
-    padding: 8px;
-    border-left: 4px solid var(--primary-color);
+    padding: 8px 0 0 8px;
+    border-left: 2px solid var(--primary-color);
     border-radius: 0 5px 5px 0;
     transition: background-color 0.2s;
   }
-  .bubble:hover {
+  .bubble:hover:not(:has(.bubble *:hover)) {
     background-color: var(--hover-color);
   }
   .self {
@@ -153,7 +130,7 @@
   }
   .header {
     font-size: 0.9em;
-    color: var(--secondary-text-color);
+    color: var(--tertiary-text-color);
     margin-bottom: 5px;
   }
   .circle {
@@ -162,7 +139,7 @@
   }
   .circle .username, .circle .timestamp {
     font-weight: normal;
-    color: var(--secondary-text-color);
+    color: var(--tertiary-text-color);
   }
   .timestamp {
     font-size: 0.8em;
@@ -174,7 +151,7 @@
     display: flex;
     gap: 15px;
     font-size: 0.9em;
-    margin-top: 10px;
+    margin: 8px 0 4px 0;
   }
   .actions a, .actions button {
     text-decoration: none;

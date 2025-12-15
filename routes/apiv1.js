@@ -496,6 +496,8 @@ router.delete("/bubbles/:id", authenticateToken, (req, res) => {
 });
 
 router.get("/bubbles/:id/anchoreds", (req, res) => {
+  const count = parseInt(req.query.count) || 50;
+
   const { id } = req.params;
   db.query(`
     SELECT ${BUBBLE_JSON_FIELDS} AS bubble
@@ -503,8 +505,8 @@ router.get("/bubbles/:id/anchoreds", (req, res) => {
     JOIN circles c ON b.circle_id = c.id
     WHERE b.anchor = ?
     ORDER BY b.id DESC
-    LIMIT 50
-  `, [id]).then(data => {
+    LIMIT ?
+  `, [id, count]).then(data => {
     const [rows, fields] = data;
     const bubbles = rows.map(row => {
       const bubble = JSON.parse(row.bubble);
