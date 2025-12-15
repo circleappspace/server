@@ -9,6 +9,7 @@
 <svelte:head>
   <title>Circle</title>
   <link rel="icon" type="image/png" href="/circle-icon-mint.PNG" />
+  <meta name="theme-color" content="#0bb7ba" />
 </svelte:head>
 
 <div class="container">
@@ -23,7 +24,7 @@
 <style>
   .container {
     font-family: 'Pretendard', sans-serif;
-    max-width: 800px;
+    max-width: 600px;
     margin: 0 auto;
     padding: 0 16px;
     box-sizing: border-box;

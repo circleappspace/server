@@ -11,7 +11,7 @@
 </script>
 
 <div class="timeline">
-  {#each bubbles as bubble (bubble.id)}
+  {#each bubbles.reverse() as bubble (bubble.id)}
     <Bubble {bubble} />
   {/each}
 </div>
