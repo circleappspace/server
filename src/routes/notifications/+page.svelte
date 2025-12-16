@@ -52,11 +52,18 @@
     <div class="content">
       <div class="message">
         {#if notification.type === 'join'}
-          {$_("notifications.joined_your_circle", { values: { circleName: notification.circle.name } })}
+          <a href="c/{notification.circle_username}" class="circle-name">{notification.circle.name}</a>
+          {$_("notifications.joined_circle")}
         {:else if notification.type === 'pop'}
-          {$_("notifications.popped_bubble", { values: { circleName: notification.circle.name } })}
+          <a href="c/{notification.circle_username}" class="circle-name">{notification.circle.name}</a>
+          {$_("notifications.popped_text")}
+          <a href="b/{notification.bubble_id}" class="my-bubble">{$_("bubble.my")}</a>
+          {$_("notifications.popped_end")}
         {:else if notification.type === 'bubblet'}
-          {$_("notifications.new_bubblet")}
+          <a href="b/{notification.bubble_id}" class="my-bubble">{$_("bubble.my")}</a>
+          {$_("notifications.bubblet_added_start")}
+          <a href="b/{notification.bubblet_id}" class="new-bubblet">{$_("bubble.new_bubblet")}</a>
+          {$_("notifications.bubblet_added_end")}
         {:else}
           {$_("notifications.unknown_notification")}
         {/if}
