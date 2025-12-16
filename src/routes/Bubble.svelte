@@ -16,6 +16,7 @@
   let mine = bubble.circle.username?.toLowerCase() === username?.toLowerCase();
 
   let popped = [];
+  let isPopped = bubble.isPopped;
 
   function react() {
     fetch(`/api/v1/bubbles/${bubble.id}/pops`, {
@@ -47,8 +48,6 @@
     dayjs.extend(relativeTime);
     return dayjs(timestamp).fromNow();
   }
-
-  let isPopped = false;
 </script>
 
 <div class="bubble">
@@ -96,9 +95,9 @@
       </a>
       <button on:click={react}>
         {#if isPopped}
-        <i class="bi bi-emoji-smile-fill"></i>
+          <i class="bi bi-emoji-smile-fill"></i>
         {:else}
-        <i class="bi bi-emoji-smile"></i>
+          <i class="bi bi-emoji-smile"></i>
         {/if}
         {bubble.pops_count}
       </button>
