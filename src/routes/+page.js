@@ -1,8 +1,7 @@
 import { loadBubble } from './Bubble.js';
 import Cookies from 'js-cookie';
 
-export async function load(data) {
-  const fetch = data.fetch;
+export async function load({ fetch }) {
   const username = Cookies.get('username');
   const seeAllBubbles = Cookies.get('seeAllBubbles');
 

@@ -55,7 +55,7 @@
   <div class="self">
     {#if bubble.anchorBubble}
       <div class="header">
-        <a href="/b/{bubble.anchor}" style="text-decoration: none; color: inherit;" data-sveltekit-reload>
+        <a href="/b/{bubble.anchor}" style="text-decoration: none; color: inherit;">
           <i class="bi bi-paperclip"></i> c/{bubble.anchorBubble.circle.username}: {bubble.anchorBubble.content.slice(0, 30)}{bubble.anchorBubble.content.length > 30 ? "..." : ""}
         </a>
       </div>
@@ -63,16 +63,16 @@
     <div class="circle">
       <span class="name">{bubble.circle.name}</span>
       <span class="username">
-        <a href="/c/{bubble.circle.username}" data-sveltekit-reload>c/{bubble.circle.username}</a> ·
+        <a href="/c/{bubble.circle.username}">c/{bubble.circle.username}</a> ·
       </span>
       <span class="timestamp">
-        <a href="/b/{bubble.id}" style="text-decoration: none; color: inherit;" data-sveltekit-reload>
+        <a href="/b/{bubble.id}" style="text-decoration: none; color: inherit;">
           {formatTimestamp(bubble.timestamp)}
         </a>
       </span>
     </div>
     <div class="content">
-      <a href="/b/{bubble.id}" style="text-decoration: none; color: inherit;" data-sveltekit-reload>
+      <a href="/b/{bubble.id}" style="text-decoration: none; color: inherit;">
         {#each paragraphs as paragraph}
         <div class="paragraph">{paragraph}</div>
         {/each}

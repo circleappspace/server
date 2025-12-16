@@ -1,21 +1,21 @@
 <script>
   import "bootstrap-icons/font/bootstrap-icons.css";
 
-  export let username = null;
+  export let username;
 </script>
 
 <div class="navigation">
-  <div><a href="/" data-sveltekit-reload><i class="bi bi-house"></i> 홈</a></div>
-  <div><a href="/search" data-sveltekit-reload><i class="bi bi-search"></i> 검색</a></div>
+  <div><a href="/"><i class="bi bi-house"></i> 홈</a></div>
+  <div><a href="/search"><i class="bi bi-search"></i> 검색</a></div>
   {#if username}
-  <div><a href="/notifications" data-sveltekit-reload><i class="bi bi-bell"></i> 알림</a></div>
-  <div><a href="/c/{username}" data-sveltekit-reload><i class="bi bi-person-circle"></i> 서클</a></div>
-  <div><a href="/blow" data-sveltekit-reload><i class="bi bi-wind"></i> 불기</a></div>
-  <div><a href="/settings" data-sveltekit-reload><i class="bi bi-gear"></i> 설정</a></div>
-  <div><a href="/logout" data-sveltekit-reload><i class="bi bi-box-arrow-right"></i> 로그아웃</a></div>
+  <div><a href="/notifications"><i class="bi bi-bell"></i> 알림</a></div>
+  <div><a href="/c/{username}"><i class="bi bi-person-circle"></i> 서클</a></div>
+  <div><a href="/blow"><i class="bi bi-wind"></i> 불기</a></div>
+  <div><a href="/settings"><i class="bi bi-gear"></i> 설정</a></div>
+  <div><a href="/logout"><i class="bi bi-box-arrow-right"></i> 로그아웃</a></div>
   {:else}
-  <div><a href="/login" data-sveltekit-reload><i class="bi bi-box-arrow-in-right"></i> 로그인</a></div>
-  <div><a href="/register" data-sveltekit-reload><i class="bi bi-person-plus"></i> 회원가입</a></div>
+  <div><a href="/login"><i class="bi bi-box-arrow-in-right"></i> 로그인</a></div>
+  <div><a href="/register"><i class="bi bi-person-plus"></i> 회원가입</a></div>
   {/if}
 </div>
 

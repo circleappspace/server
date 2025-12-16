@@ -3,7 +3,7 @@
 
   export let data;
 
-  const { bubble } = data;
+  $: bubble = data.bubble;
 </script>
 
 <svelte:head>
