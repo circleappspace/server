@@ -142,3 +142,4 @@ __pycache__/
 database.db
 build/
 uploads/
+.DS_Store

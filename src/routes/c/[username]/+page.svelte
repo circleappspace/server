@@ -1,4 +1,5 @@
 <script>
+  import { _ } from "svelte-i18n";
   import { onMount } from "svelte";
   import Cookies from "js-cookie";
   import "bootstrap-icons/font/bootstrap-icons.css";
@@ -37,24 +38,24 @@
 </div>
 <div class="action-buttons">
   <a href="/c/{username}/joins" class="view-members-button">
-    <i class="bi bi-people"></i> 참가 {circle.joins_count}
+    <i class="bi bi-people"></i> {$_("circle.joins")} {circle.joins_count}
   </a>
   <a href="/c/{username}/joiners" class="view-joiners-button">
-    <i class="bi bi-people"></i> 참가자 {circle.joinedbys_count}
+    <i class="bi bi-people"></i> {$_("circle.members")} {circle.joinedbys_count}
   </a>
   {#if token}
     {#if mine}
     <a href="/settings/circle" class="edit-circle-button">
-      <i class="bi bi-pencil-square"></i> 편집
+      <i class="bi bi-pencil-square"></i> {$_("circle.edit")}
     </a>
     {/if}
     {#if joined}
     <a href="/c/{username}/leave" class="leave-circle-button">
-      <i class="bi bi-dash-circle"></i> 나가기
+      <i class="bi bi-dash-circle"></i> {$_("circle.leave")}
     </a>
     {:else}
     <a href="/c/{username}/join" class="join-circle-button">
-      <i class="bi bi-plus-circle"></i> 참가
+      <i class="bi bi-plus-circle"></i> {$_("circle.join")}
     </a>
     {/if}
   {/if}

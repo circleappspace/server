@@ -3,7 +3,7 @@
 
   export let data;
 
-  const { username } = data;
+  $: username = data.username;
 </script>
 
 <svelte:head>

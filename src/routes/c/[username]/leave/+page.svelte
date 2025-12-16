@@ -1,6 +1,5 @@
 <script>
   import { onMount } from "svelte";
-  import { page } from "$app/stores";
   import Cookies from "js-cookie";
 
   export let data;

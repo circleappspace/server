@@ -1,11 +1,14 @@
 <script>
+  import { _ } from 'svelte-i18n';
   import { onMount, tick } from 'svelte';
   import "bootstrap-icons/font/bootstrap-icons.css";
   import dayjs from 'dayjs';
   import relativeTime from 'dayjs/plugin/relativeTime';
   import 'dayjs/locale/ko';
+  import 'dayjs/locale/en';
+  import { userLanguage } from '$lib/i18n/store';
 
-  dayjs.locale('ko');
+  $: dayjs.locale($userLanguage);
 
   export let data;
   let { notifications } = data;
@@ -31,7 +34,7 @@
 </script>
 
 {#if notifications.length === 0}
-  <div>알림이 없습니다.</div>
+  <div>{$_("notifications.no_notifications")}</div>
 {:else}
   {#each notifications as notification (notification.id)}
   <div class="notification">
@@ -49,18 +52,20 @@
     <div class="content">
       <div class="message">
         {#if notification.type === 'join'}
-          <a href="c/{notification.circle_username}" class="circle-name">{notification.circle.name}</a>님이
-          내 서클에 가입했습니다.
+          <a href="c/{notification.circle_username}" class="circle-name">{notification.circle.name}</a>
+          {$_("notifications.joined_circle")}
         {:else if notification.type === 'pop'}
-          <a href="c/{notification.circle_username}" class="circle-name">{notification.circle.name}</a>님이
-          <a href="b/{notification.bubble_id}" class="my-bubble">내 버블</a>을
-          팝했습니다.
+          <a href="c/{notification.circle_username}" class="circle-name">{notification.circle.name}</a>
+          {$_("notifications.popped_text")}
+          <a href="b/{notification.bubble_id}" class="my-bubble">{$_("bubble.my")}</a>
+          {$_("notifications.popped_end")}
         {:else if notification.type === 'bubblet'}
-          <a href="b/{notification.bubble_id}" class="my-bubble">내 버블</a>에
-          <a href="b/{notification.bubblet_id}" class="new-bubblet">새로운 버블렛</a>이
-          추가되었습니다.
+          <a href="b/{notification.bubble_id}" class="my-bubble">{$_("bubble.my")}</a>
+          {$_("notifications.bubblet_added_start")}
+          <a href="b/{notification.bubblet_id}" class="new-bubblet">{$_("bubble.new_bubblet")}</a>
+          {$_("notifications.bubblet_added_end")}
         {:else}
-          알림이 도착했습니다.
+          {$_("notifications.unknown_notification")}
         {/if}
       </div>
       <div class="timestamp">

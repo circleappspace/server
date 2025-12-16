@@ -1,12 +1,15 @@
 <script>
+  import { _ } from "svelte-i18n";
   import "bootstrap-icons/font/bootstrap-icons.css";
   import Cookies from "js-cookie";
   import dayjs from "dayjs";
   import relativeTime from "dayjs/plugin/relativeTime";
   import "dayjs/locale/ko";
+  import "dayjs/locale/en";
+  import { userLanguage } from "$lib/i18n/store";
   import Bubble from "./Bubble.svelte";
 
-  dayjs.locale("ko");
+  $: dayjs.locale($userLanguage);
 
   export let bubble;
 
@@ -16,6 +19,7 @@
   let mine = bubble.circle.username?.toLowerCase() === username?.toLowerCase();
 
   let popped = [];
+  let isPopped = bubble.isPopped;
 
   function react() {
     fetch(`/api/v1/bubbles/${bubble.id}/pops`, {
@@ -47,15 +51,13 @@
     dayjs.extend(relativeTime);
     return dayjs(timestamp).fromNow();
   }
-
-  let isPopped = false;
 </script>
 
 <div class="bubble">
   <div class="self">
     {#if bubble.anchorBubble}
       <div class="header">
-        <a href="/b/{bubble.anchor}" style="text-decoration: none; color: inherit;" data-sveltekit-reload>
+        <a href="/b/{bubble.anchor}" style="text-decoration: none; color: inherit;">
           <i class="bi bi-paperclip"></i> c/{bubble.anchorBubble.circle.username}: {bubble.anchorBubble.content.slice(0, 30)}{bubble.anchorBubble.content.length > 30 ? "..." : ""}
         </a>
       </div>
@@ -63,16 +65,16 @@
     <div class="circle">
       <span class="name">{bubble.circle.name}</span>
       <span class="username">
-        <a href="/c/{bubble.circle.username}" data-sveltekit-reload>c/{bubble.circle.username}</a> ·
+        <a href="/c/{bubble.circle.username}">c/{bubble.circle.username}</a> ·
       </span>
       <span class="timestamp">
-        <a href="/b/{bubble.id}" style="text-decoration: none; color: inherit;" data-sveltekit-reload>
+        <a href="/b/{bubble.id}" style="text-decoration: none; color: inherit;">
           {formatTimestamp(bubble.timestamp)}
         </a>
       </span>
     </div>
     <div class="content">
-      <a href="/b/{bubble.id}" style="text-decoration: none; color: inherit;" data-sveltekit-reload>
+      <a href="/b/{bubble.id}" style="text-decoration: none; color: inherit;">
         {#each paragraphs as paragraph}
         <div class="paragraph">{paragraph}</div>
         {/each}
@@ -88,7 +90,7 @@
     <div class="actions">
       {#if mine}
       <a href="/b/{bubble.id}/delete">
-        <i class="bi bi-trash"></i> 삭제
+        <i class="bi bi-trash"></i> {$_("ui.delete")}
       </a>
       {/if}
       <a href="/b/{bubble.id}/attach">
@@ -96,9 +98,9 @@
       </a>
       <button on:click={react}>
         {#if isPopped}
-        <i class="bi bi-emoji-smile-fill"></i>
+          <i class="bi bi-emoji-smile-fill"></i>
         {:else}
-        <i class="bi bi-emoji-smile"></i>
+          <i class="bi bi-emoji-smile"></i>
         {/if}
         {bubble.pops_count}
       </button>
@@ -107,7 +109,7 @@
   <slot>
     {#if bubble.bubblets && bubble.bubblets.length > 0}
       {#each bubble.bubblets.reverse() as bubblet}
-        <Bubble bubble={bubblet} autoBubbletCount={bubble.autoBubbletCount} autoBubbleDepth={bubble.autoBubbleDepth - 1} />
+        <Bubble bubble={bubblet} />
       {/each}
     {/if}
   </slot>

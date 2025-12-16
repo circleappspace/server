@@ -1,4 +1,5 @@
 <script>
+  import { _ } from 'svelte-i18n';
   import Cookies from 'js-cookie';
   import "bootstrap-icons/font/bootstrap-icons.css";
 
@@ -66,7 +67,7 @@
     <div>
       <textarea
         rows="10"
-        placeholder="생각은 방울방울"
+        placeholder={$_("blowForm.placeholder")}
         name="content"
         on:keydown={(e) => {
           if (e.key === 'Enter' && e.metaKey) {
@@ -78,9 +79,9 @@
     </div>
     <div>
       {#if blowing}
-        <button type="submit" disabled>버블 부는 중...</button>
+        <button type="submit" disabled>{$_("blowForm.blowing")}</button>
       {:else}
-        <button type="submit">버블 불기</button>
+        <button type="submit">{$_("blowForm.blow")}</button>
       {/if}
       <button class="icon-button" type="button" on:click={uploadMedia}>
         <i class="bi bi-image"></i>

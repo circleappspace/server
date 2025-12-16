@@ -12,7 +12,5 @@ export async function load({ fetch }) {
 
   const username = Cookies.get('username');
 
-  return {
-    notifications, username
-  };
+  return { notifications, username };
 }

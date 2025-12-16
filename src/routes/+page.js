@@ -1,11 +1,9 @@
 import { loadBubble } from './Bubble.js';
 import Cookies from 'js-cookie';
 
-export async function load(data) {
-  const fetch = data.fetch;
+export async function load({ fetch }) {
   const username = Cookies.get('username');
   const seeAllBubbles = Cookies.get('seeAllBubbles');
-
   const token = Cookies.get('token');
 
   let url = "/api/v1/bubbles";
@@ -15,15 +13,16 @@ export async function load(data) {
 
   const bubbles = await fetch(url, {
     headers: {
+      'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`
     }
-  }).then(async res => {
-    res = await res.json();
-    for (let i = 0; i < res.length; i++) {
-      res[i] = {...res[i], ...await loadBubble(fetch, res[i], token)};
-    }
-    return res;
-  })
+  }).then(res => {
+    return res.json();
+  }).then(res => {
+    return Promise.all(res.map(async bubble => {
+      return { ...bubble, ...await loadBubble(fetch, bubble, token) };
+    }));
+  });
 
   return { bubbles };
 }

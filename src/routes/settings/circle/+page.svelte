@@ -1,4 +1,5 @@
 <script>
+  import { _ } from 'svelte-i18n';
   import { onMount } from 'svelte';
   import Cookies from 'js-cookie';
 
@@ -28,15 +29,15 @@
     username = formData.get('username');
 
     if (bio.length > 256) {
-      alert('자기소개는 256자 이내로 작성해주세요.');
+      alert($_("settings.circle.bio_too_long"));
       return;
     }
     if (name.length > 100) {
-      alert('이름은 100자 이내로 작성해주세요.');
+      alert($_("settings.circle.name_too_long"));
       return;
     }
     if (username.length > 50) {
-      alert('핸들은 50자 이내로 작성해주세요.');
+      alert($_("settings.circle.username_too_long"));
       return;
     }
 
@@ -54,23 +55,23 @@
       window.location.href = `/c/${username}`;
     })
     .catch((error) => {
-      console.error('Error:', error);
+      console.error($_("settings.circle.update_error"), error);
     });
   }
 </script>
 
 <form on:submit|preventDefault={handleSubmit}>
-  <div>핸들</div>
+  <div>{$_("settings.circle.username")}</div>
   <input type="text" name="username" value={username} pattern="[a-zA-Z0-9_]{'{'}1,50}" on:input={e => {
-    e.target.setCustomValidity('핸들은 영문자, 숫자, 밑줄(_)만 사용할 수 있으며 50자 이내여야 합니다.');
+    e.target.setCustomValidity(e.target.validity.valid ? '' : $_('settings.circle.invalid_username'));
   }} />
-  <div>이름</div>
-  <input type="text" name="name" value={name} pattern="[^\0]{'{'}1,100}" on:input={e => {
-    e.target.setCustomValidity('이름은 100자 이내여야 합니다.');
+  <div>{$_("settings.circle.name")}</div>
+  <input type="text" name="name" value={name} pattern=".{'{'}1,100}" on:input={e => {
+    e.target.setCustomValidity(e.target.validity.valid ? '' : $_('settings.circle.name_too_long'));
   }} />
-  <div>자기소개</div>
+  <div>{$_("settings.circle.bio")}</div>
   <textarea name="bio" bind:value={bio}></textarea>
-  <button type="submit">적용</button>
+  <button type="submit">{$_("settings.circle.update")}</button>
 </form>
 
 <style>
