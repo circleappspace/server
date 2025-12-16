@@ -1,6 +1,7 @@
 import { register, init, getLocaleFromNavigator } from 'svelte-i18n';
 
 register('en', () => import('./messages/en.json'));
+register('ko', () => import('./messages/ko.json'));
 
 export function initializeI18n(lang = 'en') {
   init({

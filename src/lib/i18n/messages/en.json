@@ -1,4 +1,7 @@
 {
+  "blowForm.blow": "Blow",
+  "blowForm.blowing": "Blowing...",
+  "blowForm.placeholder": "Thoughts bubble up",
   "bubble.my": "My bubble",
   "bubble.new_bubblet": "New bubblet",
   "circle.edit": "Edit",
@@ -20,12 +23,12 @@
   "nav.register": "Register",
   "nav.search": "Search",
   "nav.settings": "Settings",
-  "notifications.joined_circle": " has joined your circle.",
-  "notifications.popped_text": " popped",
-  "notifications.popped_end": ".",
-  "notifications.bubblet_added_start": " had",
   "notifications.bubblet_added_end": " added.",
+  "notifications.bubblet_added_start": " had",
+  "notifications.joined_circle": " has joined your circle.",
   "notifications.no_notifications": "No notifications.",
+  "notifications.popped_end": ".",
+  "notifications.popped_text": " popped",
   "notifications.unknown_notification": "You have a new notification.",
   "register.name": "Name",
   "register.password": "Password",
@@ -41,11 +44,9 @@
   "settings.circle.update_error": "Error updating circle settings:",
   "settings.circle.username": "Handle",
   "settings.circle.username_too_long": "Handle must be within 50 characters.",
+  "settings.language": "Language",
   "settings.see_all_bubbles": "See all bubbles in timeline",
   "ui.circle": "Circle",
-  "ui.loading": "Loading...",
   "ui.delete": "Delete",
-  "blowForm.placeholder": "Thoughts bubble up",
-  "blowForm.blowing": "Blowing...",
-  "blowForm.blow": "Blow"
+  "ui.loading": "Loading..."
 }

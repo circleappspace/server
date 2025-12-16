@@ -63,11 +63,11 @@
 <form on:submit|preventDefault={handleSubmit}>
   <div>{$_("settings.circle.username")}</div>
   <input type="text" name="username" value={username} pattern="[a-zA-Z0-9_]{'{'}1,50}" on:input={e => {
-    e.target.setCustomValidity($_("settings.circle.invalid_username"));
+    e.target.setCustomValidity(e.target.validity.valid ? '' : $_('settings.circle.invalid_username'));
   }} />
   <div>{$_("settings.circle.name")}</div>
-  <input type="text" name="name" value={name} pattern="[^\0]{'{'}1,100}" on:input={e => {
-    e.target.setCustomValidity($_("settings.circle.name_too_long"));
+  <input type="text" name="name" value={name} pattern=".{'{'}1,100}" on:input={e => {
+    e.target.setCustomValidity(e.target.validity.valid ? '' : $_('settings.circle.name_too_long'));
   }} />
   <div>{$_("settings.circle.bio")}</div>
   <textarea name="bio" bind:value={bio}></textarea>

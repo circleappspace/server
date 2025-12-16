@@ -2,6 +2,7 @@
   import { _ } from 'svelte-i18n';
   import "bootstrap-icons/font/bootstrap-icons.css";
   import Cookies from 'js-cookie';
+  import { userLanguage, setLanguage } from '$lib/i18n/store';
 
   let isSeeAllBubbles = Cookies.get('seeAllBubbles') === 'true';
 
@@ -12,6 +13,12 @@
       Cookies.remove('seeAllBubbles');
     }
   }
+
+  function toggleLanguage() {
+    const newLang = $userLanguage === 'en' ? 'ko' : 'en';
+    setLanguage(newLang);
+  }
+
 </script>
 
 <div class="settings-item">
@@ -22,10 +29,18 @@
   {$_("settings.see_all_bubbles")}
   <input type="checkbox" on:change={seeAllBubbles} checked={isSeeAllBubbles}/>
 </div>
+<button type="button" class="settings-item" on:click={toggleLanguage}>
+  <i class="bi bi-translate"></i> {$_("settings.language")}
+</button>
 
 <style>
   .settings-item {
-    padding: 1rem;
+    margin: 1rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    font-size: 1rem;
   }
   .settings-item a {
     text-decoration: none;
@@ -42,5 +57,10 @@
   }
   input[type="checkbox"] {
     margin-left: 1rem;
+    margin-bottom: 0;
+  }
+  button.settings-item {
+    display: block;
+    padding: 0;
   }
 </style>

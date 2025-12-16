@@ -1,5 +1,6 @@
 import { initializeI18n } from '$lib/i18n';
 import { setLanguage } from '$lib/i18n/store';
+import Cookies from 'js-cookie';
 
 // Locale 정규화 (en-US → en, ko-KR → ko)
 function normalizeLocale(locale) {
@@ -9,12 +10,15 @@ function normalizeLocale(locale) {
 
 export async function init() {
   // 쿠키에서 언어 읽기
-  let lang = document.cookie
-    .split('; ')
-    .find(row => row.startsWith('lang='))
-    ?.split('=')[1] || 'en';
+  let lang = Cookies.get('lang');
   
-  lang = normalizeLocale(lang);
+  if (!lang) {
+    const acceptLanguage = navigator.language || navigator.userLanguage;
+    lang = acceptLanguage ? normalizeLocale(acceptLanguage.split(',')[0]) : 'en';
+  }
+  
+  lang = normalizeLocale(lang); // 한번 더 정규화
+  
   initializeI18n(lang);
   setLanguage(lang);
 }
