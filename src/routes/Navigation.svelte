@@ -1,4 +1,5 @@
 <script>
+  import { _ } from 'svelte-i18n';
   import "bootstrap-icons/font/bootstrap-icons.css";
   import { page } from '$app/stores';
 
@@ -14,7 +15,7 @@
     {:else}
       <i class="bi bi-house"></i>
     {/if}
-    홈
+    {$_('nav.home')}
   </a></div>
   <div><a href="/search">
     {#if path === '/search'}
@@ -22,7 +23,7 @@
     {:else}
       <i class="bi bi-search-heart"></i>
     {/if}
-    검색
+    {$_('nav.search')}
   </a></div>
   {#if username}
     <div><a href="/notifications">
@@ -31,7 +32,7 @@
       {:else}
         <i class="bi bi-bell"></i>
       {/if}
-      알림
+      {$_('nav.notifications')}
     </a></div>
     <div><a href="/c/{username}">
       {#if path === `/c/${username}`}
@@ -39,7 +40,7 @@
       {:else}
         <i class="bi bi-file-person"></i>
       {/if}
-      서클
+      {$_('nav.circles')}
     </a></div>
     <div><a href="/blow">
       {#if path === '/blow'}
@@ -47,7 +48,7 @@
       {:else}
         <i class="bi bi-chat"></i>
       {/if}
-      블로우
+      {$_('nav.blow')}
     </a></div>
     <div><a href="/settings">
       {#if path === '/settings'}
@@ -55,9 +56,12 @@
       {:else}
         <i class="bi bi-gear"></i>
       {/if}
-      설정
+      {$_('nav.settings')}
     </a></div>
-    <div><a href="/logout"><i class="bi bi-box-arrow-right"></i> 로그아웃</a></div>
+    <div><a href="/logout">
+      <i class="bi bi-box-arrow-right"></i>
+      {$_('nav.logout')}
+    </a></div>
   {:else}
     <div><a href="/login">
       {#if path === '/login'}
@@ -65,7 +69,7 @@
       {:else}
         <i class="bi bi-door-closed"></i>
       {/if}
-      로그인
+      {$_('nav.login')}
     </a></div>
     <div><a href="/register">
       {#if path === '/register'}
@@ -73,7 +77,7 @@
       {:else}
         <i class="bi bi-pencil"></i>
       {/if}
-      회원가입
+      {$_('nav.register')}
     </a></div>
   {/if}
 </div>

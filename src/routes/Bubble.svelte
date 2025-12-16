@@ -1,12 +1,15 @@
 <script>
+  import { _ } from "svelte-i18n";
   import "bootstrap-icons/font/bootstrap-icons.css";
   import Cookies from "js-cookie";
   import dayjs from "dayjs";
   import relativeTime from "dayjs/plugin/relativeTime";
   import "dayjs/locale/ko";
+  import "dayjs/locale/en";
+  import { userLanguage } from "$lib/i18n/store";
   import Bubble from "./Bubble.svelte";
 
-  dayjs.locale("ko");
+  $: dayjs.locale($userLanguage);
 
   export let bubble;
 
@@ -87,7 +90,7 @@
     <div class="actions">
       {#if mine}
       <a href="/b/{bubble.id}/delete">
-        <i class="bi bi-trash"></i> 삭제
+        <i class="bi bi-trash"></i> {$_("ui.delete")}
       </a>
       {/if}
       <a href="/b/{bubble.id}/attach">

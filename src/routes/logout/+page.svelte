@@ -1,4 +1,5 @@
 <script>
+  import { _ } from 'svelte-i18n';
   import Cookies from 'js-cookie';
   import { onMount } from 'svelte';
 
@@ -17,4 +18,4 @@
   });
 </script>
 
-<div>로그아웃중 ...</div>
+<div>{$_("logout.logging_out")}</div>

@@ -1,4 +1,5 @@
 <script>
+  import { _ } from 'svelte-i18n';
   import "bootstrap-icons/font/bootstrap-icons.css";
   import Cookies from 'js-cookie';
 
@@ -14,11 +15,11 @@
 </script>
 
 <div class="settings-item">
-  <a href="/settings/circle"><i class="bi bi-person-circle"></i> 서클 설정</a>
+  <a href="/settings/circle"><i class="bi bi-person-circle"></i> {$_("settings.circle")}</a>
 </div>
 <div class="settings-item">
   <i class="bi bi-calendar"></i>
-  타임라인에서 모든 버블 보기
+  {$_("settings.see_all_bubbles")}
   <input type="checkbox" on:change={seeAllBubbles} checked={isSeeAllBubbles}/>
 </div>
 

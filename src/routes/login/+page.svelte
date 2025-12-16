@@ -1,4 +1,5 @@
 <script>
+  import { _ } from 'svelte-i18n';
   import Cookies from 'js-cookie';
 
   let loggingIn = false;
@@ -34,19 +35,19 @@
 </script>
 
 <form on:submit={handleSubmit}>
-  <div>Username</div>
+  <div>{$_("login.username")}</div>
   <div>
     <input type="text" id="username" name="username" required />
   </div>
-  <div>Password</div>
+  <div>{$_("login.password")}</div>
   <div>
     <input type="password" id="password" name="password" required />
   </div>
   <div>
     {#if !loggingIn}
-      <button type="submit">Login</button>
+      <button type="submit">{$_("login.login")}</button>
     {:else}
-      <button type="submit" disabled>Logging in...</button>
+      <button type="submit" disabled>{$_("login.logging_in")}</button>
     {/if}
   </div>
 </form>

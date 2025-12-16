@@ -13,7 +13,7 @@
         Authorization: `Bearer ${token}`
       }
     })
-      .then((response) => {
+      .then(() => {
         window.location.href = '/';
       })
       .catch((error) => {
