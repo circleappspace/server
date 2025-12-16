@@ -106,7 +106,7 @@
   <slot>
     {#if bubble.bubblets && bubble.bubblets.length > 0}
       {#each bubble.bubblets.reverse() as bubblet}
-        <Bubble bubble={bubblet} autoBubbletCount={bubble.autoBubbletCount} autoBubbleDepth={bubble.autoBubbleDepth - 1} />
+        <Bubble bubble={bubblet} />
       {/each}
     {/if}
   </slot>

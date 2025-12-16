@@ -11,17 +11,20 @@ export async function loadBubble(fetch, bubble, token, autoBubbleDepth = 1, auto
       console.error("Error:", error);
     });
 
-  const isPopped = fetch(`/api/v1/bubbles/${bubble.id}/pops/me`, {
+  const isPopped = await fetch(`/api/v1/bubbles/${bubble.id}/pops/me`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-  })
-    .then((response) => response.json())
-    .then((data) => data.length > 0)
-    .catch((error) => console.error("Error:", error));
-  
+  }).then((response) => {
+    return response.json()
+  }).then((data) => {
+    return data.length > 0
+  }).catch((error) => {
+    console.error("Error:", error);
+  });
+
   let bubblets = [];
   let anchorBubble = null;
   if (autoBubbletCount > 0 && autoBubbleDepth > 0) {
